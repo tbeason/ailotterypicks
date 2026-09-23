@@ -30,14 +30,6 @@ class Game:
     bonus_name: str
     white_count: int
     eras: Tuple[Era, ...]  # sorted oldest -> newest
-    home_url: str = ""
-    results_url: str = ""  # format string with {date} or {ticks}
-
-    def official_url(self, d: date) -> str:
-        """Official results page for drawing date `d`."""
-        # .NET DateTime ticks, as megamillions.com expects
-        ticks = (d - date(1, 1, 1)).days * 864_000_000_000
-        return self.results_url.format(date=d.isoformat(), ticks=ticks)
 
     def era_for(self, d: date) -> Era:
         chosen = None
@@ -80,8 +72,6 @@ POWERBALL = Game(
         # Monday drawings added 2021-08-23.
         Era(date(2021, 8, 23), 69, 26, 2, (0, 2, 5), _PB_PRIZES),
     ),
-    home_url="https://www.powerball.com",
-    results_url="https://www.powerball.com/draw-result?gc=powerball&date={date}",
 )
 
 MEGA_MILLIONS = Game(
@@ -105,9 +95,6 @@ MEGA_MILLIONS = Game(
             (1, True): 14, (0, True): 10,
         }),
     ),
-    home_url="https://www.megamillions.com",
-    results_url=("https://www.megamillions.com/Winning-Numbers/Previous-Drawings/"
-                 "Previous-Drawing-Page.aspx?date={ticks}"),
 )
 
 # Prize tier -> column prefix in the tbeason/lotterywinners CSVs.

@@ -301,14 +301,6 @@ def test_prompt_is_small(game):
     assert total < 900, total  # roughly <= 350 tokens
 
 
-def test_official_urls():
-    assert POWERBALL.official_url(date(2026, 9, 23)) == \
-        "https://www.powerball.com/draw-result?gc=powerball&date=2026-09-23"
-    # .NET ticks for midnight 2026-09-25 (matches tbeason/lotterywinners date_to_ticks)
-    assert MEGA_MILLIONS.official_url(date(2026, 9, 25)).endswith(
-        "Previous-Drawing-Page.aspx?date=" + str((date(2026, 9, 25) - date(1, 1, 1)).days * 864_000_000_000))
-
-
 # --- scoring -------------------------------------------------------------
 def test_score_tiers():
     draw = {"date": "2026-09-19", "numbers": [1, 2, 3, 4, 5], "bonus": 10}

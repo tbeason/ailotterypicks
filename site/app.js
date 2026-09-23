@@ -11,37 +11,26 @@
     $("#board").innerHTML = "<tr><td>No data yet.</td></tr>";
     return;
   }
-  let game = "all";
   let shown = 12;
 
-  function boardRows() {
-    return data.leaderboard.map((b) => {
-      if (game === "all") return b;
-      const g = b.by_game[game];
-      return g ? { ...b, tickets: g.tickets, spent: g.spent, won: g.won, net: g.won - g.spent, perGame: true } : null;
-    }).filter(Boolean).sort((a, b) => b.net - a.net);
-  }
-
   function renderBoard() {
-    const rows = boardRows();
+    const rows = data.leaderboard;
     if (!rows.length) {
       $("#board").innerHTML = "<tr><td>No scored drawings yet. Check back after the next drawing.</td></tr>";
     } else {
       $("#board").innerHTML =
         "<thead><tr><th>Contestant</th><th>Tickets</th><th>Spent</th><th>Won</th><th>Net</th>" +
-        (game === "all" ? "<th>Avg white hits</th><th>Bonus hit rate</th><th>Best</th>" : "") +
-        "</tr></thead><tbody>" +
+        "<th>Avg white hits</th><th>Bonus hit rate</th><th>Best</th></tr></thead><tbody>" +
         rows.map((b) => `<tr class="${b.baseline ? "baseline" : ""}">
           <td>${esc(b.label)}</td><td>${b.tickets}</td><td>${money(b.spent)}</td>
           <td>${money(b.won)}</td><td class="${b.net > 0 ? "pos" : "neg"}">${money(b.net)}</td>
-          ${game === "all" ? `<td>${b.avg_white_matches.toFixed(2)}</td>
+          <td>${b.avg_white_matches.toFixed(2)}</td>
           <td>${(100 * b.bonus_rate).toFixed(1)}%</td>
-          <td>${b.best ? `${b.best.tier[0]}${b.best.tier[1] ? "+B" : ""}` : "-"}</td>` : ""}
+          <td>${b.best ? `${b.best.tier[0]}${b.best.tier[1] ? "+B" : ""}` : "-"}</td>
         </tr>`).join("") + "</tbody>";
     }
     const e = data.expected_random;
-    const keys = game === "all" ? Object.keys(e) : [game];
-    $("#expect").innerHTML = "What pure chance predicts per ticket: " + keys.map((k) =>
+    $("#expect").innerHTML = "What pure chance predicts per ticket: " + Object.keys(e).map((k) =>
       `<b>${k === "powerball" ? "Powerball" : "Mega Millions"}</b>: ${e[k].white_matches.toFixed(2)} white hits, ` +
       `${(100 * e[k].bonus_match).toFixed(1)}% bonus hits, wins something ${(100 * e[k].win_rate).toFixed(1)}% of the time, ` +
       `returns about ${(100 * e[k].return_per_dollar_ex_jackpot).toFixed(0)}&cent; per $1 in base prizes, before the jackpot ` +
@@ -73,14 +62,11 @@
     }).join("");
     const head = r ? `<div class="row result"><span class="who">Drawn</span>${balls(r.numbers, r.bonus, null)}
         <span class="meta">${r.multiplier ? r.multiplier + "x multiplier" : ""}${r.jackpot ? " · jackpot " + esc(r.jackpot) : ""}</span></div>` : "";
-    const link = r
-      ? `<a href="${esc(d.official_url)}" rel="noopener noreferrer" target="_blank">official results</a>`
-      : `<a href="${esc(d.home_url)}" rel="noopener noreferrer" target="_blank">official site</a>`;
-    return `<article class="card"><h3>${esc(d.game_name)} <small>${d.date}${r ? "" : " · awaiting drawing"} · ${link}</small></h3>${head}${rows}</article>`;
+    return `<article class="card"><h3>${esc(d.game_name)} <small>${d.date}${r ? "" : " · awaiting drawing"}</small></h3>${head}${rows}</article>`;
   }
 
   function renderDraws() {
-    const list = data.draws.filter((d) => game === "all" || d.game === game);
+    const list = data.draws;
     const up = list.filter((d) => !d.result);
     const past = list.filter((d) => d.result);
     $("#upcoming-sec").hidden = !up.length;
@@ -89,10 +75,6 @@
     $("#more").hidden = past.length <= shown;
   }
 
-  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
-    document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
-    game = b.dataset.game; shown = 12; renderBoard(); renderDraws();
-  }));
   $("#more").addEventListener("click", () => { shown += 12; renderDraws(); });
   $("#gen").textContent = "Updated " + new Date(data.generated_at).toLocaleString() + ".";
   renderBoard(); renderDraws();

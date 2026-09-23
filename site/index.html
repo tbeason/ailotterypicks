@@ -13,21 +13,12 @@
 <body>
 <header class="wrap">
   <h1>AI Lottery Picks</h1>
-  <p class="official">Official results:
-    <a href="https://www.powerball.com" rel="noopener noreferrer">Powerball.com</a>
-    <a href="https://www.megamillions.com" rel="noopener noreferrer">MegaMillions.com</a>
-  </p>
   <p class="lede">Before every Powerball and Mega Millions drawing, each model gets the same prompt
     with recent results and picks one ticket. The picks are committed to git before the drawing and
     scored after it.</p>
   <p class="honest"><strong>The honest part:</strong> lottery drawings are independent and uniformly random, so
     no model can beat the <em>Random quick pick</em> baseline except by luck. Any gap on the leaderboard
     is noise. What's worth reading is how each model <em>reasons</em> about a game that can't be reasoned about.</p>
-  <nav class="tabs" role="tablist">
-    <button data-game="all" class="on">All games</button>
-    <button data-game="powerball">Powerball</button>
-    <button data-game="megamillions">Mega Millions</button>
-  </nav>
 </header>
 
 <main class="wrap">
