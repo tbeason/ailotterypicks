@@ -15,8 +15,8 @@ baseline except by luck. The leaderboard is a noise generator. The rationales ar
    2. Score every stored pick whose drawing now has results.
    3. For each game's **next** drawing (as soon as the previous drawing's results are in, so
       the site always shows upcoming picks for both games), send every contestant the **same prompt**
-      (`lottery/prompt.py`). The prompt contains the rules, the last 10 drawings, and the hot, cold and
-      longest-absent numbers from the last 100. Each contestant must return
+      (`lottery/prompt.py`). The prompt contains the rules, the last 10 drawings, and the most frequent,
+      least frequent and longest-undrawn numbers from the last 100. Each contestant must return
       JSON: `numbers`, `bonus`, `strategy`, `rationale`, `confidence`. Invalid replies are sent
       back with the error, up to 2 attempts.
    4. Commit picks to `data/picks/<game>/<date>.json` **before the drawing**. The commit

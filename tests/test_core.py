@@ -367,7 +367,8 @@ def test_pick_score_build(tmp_path, monkeypatch):
     rec = cli.run_picks("powerball", d)
     assert "numbers" in rec["picks"]["random"] and "numbers" in rec["picks"]["hot"]
     assert "error" in rec["picks"]["claude-opus"]  # no API key -> recorded error, no crash
-    assert "longest absent" in rec["prompt"]["user"]
+    assert "not drawn longest" in rec["prompt"]["user"]
+    assert not any(w in rec["prompt"]["user"] for w in ("hot", "cold", "absent"))
 
     results.save_draws("powerball", hist + [
         {"date": d.isoformat(), "numbers": rec["picks"]["random"]["numbers"],
