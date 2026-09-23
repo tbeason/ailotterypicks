@@ -14,7 +14,7 @@ import urllib.request
 from typing import Any, Dict, Optional
 
 TIMEOUT = 60
-USER_AGENT = "ai-lottery-picks (+https://github.com/tbeason/ai-lottery-picks)"
+USER_AGENT = "ailotterypicks (+https://github.com/tbeason/ailotterypicks)"
 
 # Anything that looks like an API key. Applied to everything we print or save.
 _KEY_PATTERNS = [

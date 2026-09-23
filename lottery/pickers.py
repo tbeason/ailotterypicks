@@ -100,7 +100,7 @@ def pick_openrouter(model: Dict, game_key: str, draw_date: date, prompt: Dict,
         try:
             data = post_json(OPENROUTER_URL, body, timeout=120, headers={
                 "Authorization": f"Bearer {key}",
-                "HTTP-Referer": "https://github.com/tbeason/ai-lottery-picks",
+                "HTTP-Referer": "https://github.com/tbeason/ailotterypicks",
                 "X-Title": "AI Lottery Picks"})
         except HttpError as e:
             # Don't retry paid calls on transport errors; next scheduled run will.
