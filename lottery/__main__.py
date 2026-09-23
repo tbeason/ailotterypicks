@@ -190,7 +190,9 @@ def build_site_data() -> Dict:
                      for cid, pk in rec["picks"].items()}
             draws_out.append({k: rec.get(k) for k in ("game", "date", "result", "scores")}
                              | {"picks": picks, "game_name": game.name,
-                                "bonus_name": game.bonus_name})
+                                "bonus_name": game.bonus_name,
+                                "official_url": game.official_url(date.fromisoformat(rec["date"])),
+                                "home_url": game.home_url})
             for cid, s in (rec.get("scores") or {}).items():
                 b = board.setdefault(cid, {
                     "id": cid, "label": contestants.get(cid, {}).get("label", cid),

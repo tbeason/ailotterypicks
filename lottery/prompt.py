@@ -14,7 +14,7 @@ from typing import Dict, List
 
 from .games import GAMES
 
-PROMPT_VERSION = 3  # v3: neutral labels instead of hot/cold/longest absent
+PROMPT_VERSION = 3  # v3: 'most/least frequent' instead of 'hot/cold'
 RECENT_DRAWS = 10
 STATS_WINDOW = 100
 TOP_N = 8
@@ -53,6 +53,6 @@ Pick 5 distinct numbers 1-{era.white_max} and 1 {game.bonus_name} 1-{era.bonus_m
 Last {min(RECENT_DRAWS, len(past))} drawings (newest first, {game.bonus_name} after |):
 {recent or 'none'}
 Last {len(window)} drawings: most frequent {top(wf, era.white_max, True)}; least frequent {top(wf, era.white_max, False)}; \
-{game.bonus_name} most frequent {top(bf, era.bonus_max, True)}; not drawn longest {" ".join(map(str, overdue))}
+{game.bonus_name} most frequent {top(bf, era.bonus_max, True)}; longest absent {" ".join(map(str, overdue))}
 JSON: {{"numbers":[5 ints],"bonus":int,"strategy":"<=6 words","rationale":"<=30 words","confidence":0-100}}"""
     return {"system": SYSTEM, "user": user, "version": PROMPT_VERSION}

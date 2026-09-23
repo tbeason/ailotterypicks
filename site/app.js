@@ -73,7 +73,10 @@
     }).join("");
     const head = r ? `<div class="row result"><span class="who">Drawn</span>${balls(r.numbers, r.bonus, null)}
         <span class="meta">${r.multiplier ? r.multiplier + "x multiplier" : ""}${r.jackpot ? " · jackpot " + esc(r.jackpot) : ""}</span></div>` : "";
-    return `<article class="card"><h3>${esc(d.game_name)} <small>${d.date}${r ? "" : " · awaiting drawing"}</small></h3>${head}${rows}</article>`;
+    const link = r
+      ? `<a href="${esc(d.official_url)}" rel="noopener noreferrer" target="_blank">official results</a>`
+      : `<a href="${esc(d.home_url)}" rel="noopener noreferrer" target="_blank">official site</a>`;
+    return `<article class="card"><h3>${esc(d.game_name)} <small>${d.date}${r ? "" : " · awaiting drawing"} · ${link}</small></h3>${head}${rows}</article>`;
   }
 
   function renderDraws() {
