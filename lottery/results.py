@@ -105,6 +105,14 @@ def fetch_lotterywinners(game_key: str) -> Dict[str, Dict]:
         return {}
 
 
+# Drawings where NY's data is wrong and lotterywinners is right, confirmed by
+# a third source (mirrors KNOWN_NY_ERRATA in tbeason/lotterywinners
+# validate_data.py). For these we take the lotterywinners numbers.
+KNOWN_NY_ERRATA = {
+    ("megamillions", "2022-05-10"): "NY lists Mega Ball 6 instead of 9 (Texas Lottery agrees with 9)",
+}
+
+
 def reconcile(game_key: str, draws: List[Dict], lw: Dict[str, Dict]) -> List[Dict]:
     """Cross-check NY numbers against lotterywinners and fill gaps from it."""
     by_date = {r["date"]: r for r in draws}
@@ -121,6 +129,9 @@ def reconcile(game_key: str, draws: List[Dict], lw: Dict[str, Dict]) -> List[Dic
         if "numbers" in rec:
             if (rec["numbers"], rec["bonus"]) == (row["numbers"], row["bonus"]):
                 row["verified"] = True
+            elif (game_key, d) in KNOWN_NY_ERRATA:
+                row.update(numbers=rec["numbers"], bonus=rec["bonus"], verified=True,
+                           source="lotterywinners", note=KNOWN_NY_ERRATA[(game_key, d)])
             else:
                 row["verified"] = False
                 print(f"[warn] {game_key} {d}: sources disagree: NY {row['numbers']}+{row['bonus']} "

@@ -103,6 +103,14 @@ def test_reconcile_verifies_flags_and_fills(capsys):
     assert "disagree" in capsys.readouterr().out
 
 
+def test_reconcile_applies_known_ny_errata(capsys):
+    lw = {"2022-05-10": {"numbers": [15, 19, 20, 61, 70], "bonus": 9}}
+    ny = [{"date": "2022-05-10", "numbers": [15, 19, 20, 61, 70], "bonus": 6, "source": "data.ny.gov"}]
+    row = results.reconcile("megamillions", ny, lw)[0]
+    assert row["bonus"] == 9 and row["verified"] and row["source"] == "lotterywinners"
+    assert "disagree" not in capsys.readouterr().out
+
+
 # --- picks ---------------------------------------------------------------
 def test_extract_json_with_fences():
     assert extract_json('Sure!\n```json\n{"numbers":[1,2,3,4,5],"bonus":1}\n```') == \
