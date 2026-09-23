@@ -19,7 +19,7 @@ from typing import Dict, List, Optional
 from zoneinfo import ZoneInfo
 
 from . import results
-from .budget import Budget, BudgetError, fetch_pricing
+from .budget import Budget, BudgetError, fetch_models, fetch_pricing
 from .games import GAMES
 from .http import HttpError
 from .pickers import PROVIDERS, PickError
@@ -199,11 +199,23 @@ def cmd_build_site(args) -> None:
 
 
 def cmd_check_models(args) -> None:
-    """Verify model IDs exist and show each one's worst-case cost per call."""
-    pricing = fetch_pricing()
+    """Verify model IDs exist and show each one's worst-case cost per call.
+
+    For a missing ID, list that vendor's newest models (by release date) with
+    their worst-case cost, so picking a replacement is easy.
+    """
+    models = fetch_models()
+    pricing = fetch_pricing(models)
     budget = Budget.load(load_config(), PICKS_DIR, pricing=pricing)
     sample = build_prompt("powerball", now_et().date(), results.load_draws("powerball"))
     chars = len(sample["system"]) + len(sample["user"])
+
+    def cost_note(mid: str) -> str:
+        try:
+            return f"${budget.worst_case(mid, chars):.5f}"
+        except BudgetError:
+            return "unpriced"
+
     bad = 0
     for c in load_contestants():
         if c["provider"] != "openrouter":
@@ -211,8 +223,12 @@ def cmd_check_models(args) -> None:
         if c["model"] not in pricing:
             bad += 1
             vendor = c["model"].split("/")[0]
-            near = sorted(i for i in pricing if i.startswith(vendor + "/"))[-15:]
-            print(f"MISSING  {c['model']}\n         {vendor} models: {', '.join(near)}")
+            newest = sorted((m for m in models if m["id"].startswith(vendor + "/")
+                             and ":" not in m["id"]),
+                            key=lambda m: -(m.get("created") or 0))[:12]
+            print(f"MISSING  {c['model']}. Newest {vendor} models (worst case per call):")
+            for m in newest:
+                print(f"           {m['id']:<45} {cost_note(m['id'])}")
             continue
         try:
             wc = budget.approve(c["model"], chars)

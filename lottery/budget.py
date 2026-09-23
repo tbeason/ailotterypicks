@@ -33,10 +33,14 @@ class BudgetError(Exception):
     pass
 
 
-def fetch_pricing() -> Dict[str, Dict[str, float]]:
+def fetch_models() -> list:
+    return get_json(MODELS_URL)["data"]
+
+
+def fetch_pricing(models: Optional[list] = None) -> Dict[str, Dict[str, float]]:
     """model id -> USD per token (prompt, completion) and per request."""
     out = {}
-    for m in get_json(MODELS_URL)["data"]:
+    for m in (models if models is not None else fetch_models()):
         p = m.get("pricing") or {}
         try:
             out[m["id"]] = {k: float(p.get(k) or 0) for k in ("prompt", "completion", "request")}
