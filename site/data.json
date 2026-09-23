@@ -1,7 +1,145 @@
 {
- "generated_at": "2026-09-23T16:11:22+00:00",
+ "generated_at": "2026-09-23T18:14:57+00:00",
  "leaderboard": [],
- "draws": [],
+ "draws": [
+  {
+   "game": "powerball",
+   "date": "2026-09-23",
+   "result": null,
+   "scores": null,
+   "picks": {
+    "claude-opus": {
+     "label": "Claude Opus 5.5",
+     "model": "anthropic/claude-opus-5.5",
+     "picked_at": "2026-09-23T18:14:29+00:00",
+     "numbers": [
+      8,
+      27,
+      44,
+      51,
+      62
+     ],
+     "bonus": 13,
+     "strategy": "Random spread, avoid popular patterns",
+     "rationale": "Draws are independent, so no pick has better odds. Numbers above 31 and a scattered spread reduce the chance of splitting a jackpot with birthday pickers.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "anthropic/claude-opus-5.5",
+     "cost_usd": 0.004188
+    },
+    "gpt": {
+     "label": "GPT-6 Sol",
+     "model": "openai/gpt-6-sol",
+     "picked_at": "2026-09-23T18:14:33+00:00",
+     "numbers": [
+      8,
+      27,
+      36,
+      51,
+      63
+     ],
+     "bonus": 12,
+     "strategy": "Spread across the number range",
+     "rationale": "Lottery draws are random; past results do not make any valid combination more likely.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "openai/gpt-6-sol",
+     "cost_usd": 0.00148
+    },
+    "gemini": {
+     "label": "Gemini 3.8 Flash",
+     "model": "google/gemini-3.8-flash",
+     "picked_at": "2026-09-23T18:14:35+00:00",
+     "numbers": [
+      1,
+      17,
+      34,
+      58,
+      64
+     ],
+     "bonus": 3,
+     "strategy": "Balance hot and overdue numbers",
+     "rationale": "Combines persistent hot performers 17, 58, and 64 with deeply overdue cold numbers 1 and 34, anchored by historically frequent Powerball 3.",
+     "confidence": 12,
+     "attempts": 1,
+     "served_model": "google/gemini-3.8-flash",
+     "cost_usd": 0.000779
+    },
+    "grok": {
+     "label": "Grok 4.7",
+     "model": "x-ai/grok-4.7",
+     "picked_at": "2026-09-23T18:14:44+00:00",
+     "numbers": [
+      1,
+      34,
+      43,
+      51,
+      52
+     ],
+     "bonus": 16,
+     "strategy": "longest-absent white balls",
+     "rationale": "Chose five longest-absent whites and a Powerball outside recent draws. Lottery outcomes are random; this is not predictive.",
+     "confidence": 8,
+     "attempts": 1,
+     "served_model": "x-ai/grok-4.7",
+     "cost_usd": 0.0038
+    },
+    "deepseek": {
+     "label": "DeepSeek",
+     "model": "deepseek/deepseek-chat",
+     "picked_at": "2026-09-23T18:14:52+00:00",
+     "numbers": [
+      3,
+      17,
+      30,
+      58,
+      64
+     ],
+     "bonus": 3,
+     "strategy": "Hot numbers",
+     "rationale": "Using frequently drawn numbers from last 100 drawings and hot Powerball.",
+     "confidence": 85,
+     "attempts": 1,
+     "served_model": "deepseek/deepseek-chat",
+     "cost_usd": 0.000174
+    },
+    "random": {
+     "label": "Random quick pick",
+     "model": "baseline",
+     "picked_at": "2026-09-23T18:14:57+00:00",
+     "numbers": [
+      25,
+      31,
+      41,
+      55,
+      69
+     ],
+     "bonus": 20,
+     "strategy": "Uniform random (quick pick)",
+     "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+     "confidence": null
+    },
+    "hot": {
+     "label": "Hot-numbers bot",
+     "model": "baseline",
+     "picked_at": "2026-09-23T18:14:57+00:00",
+     "numbers": [
+      3,
+      17,
+      58,
+      64,
+      65
+     ],
+     "bonus": 3,
+     "strategy": "Hottest numbers, last 100 draws",
+     "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+     "confidence": null
+    }
+   },
+   "game_name": "Powerball",
+   "bonus_name": "Powerball"
+  }
+ ],
  "expected_random": {
   "powerball": {
    "white_matches": 0.36231884057971014,
@@ -28,22 +166,22 @@
   },
   {
    "id": "gpt",
-   "label": "GPT-6",
-   "model": "openai/gpt-6",
+   "label": "GPT-6 Sol",
+   "model": "openai/gpt-6-sol",
    "enabled": true,
    "baseline": null
   },
   {
    "id": "gemini",
-   "label": "Gemini",
-   "model": "google/gemini-3-pro",
+   "label": "Gemini 3.8 Flash",
+   "model": "google/gemini-3.8-flash",
    "enabled": true,
    "baseline": null
   },
   {
    "id": "grok",
-   "label": "Grok",
-   "model": "x-ai/grok-4",
+   "label": "Grok 4.7",
+   "model": "x-ai/grok-4.7",
    "enabled": true,
    "baseline": null
   },
