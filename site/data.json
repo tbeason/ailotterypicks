@@ -1,7 +1,144 @@
 {
- "generated_at": "2026-09-23T18:14:57+00:00",
+ "generated_at": "2026-09-23T19:11:15+00:00",
  "leaderboard": [],
  "draws": [
+  {
+   "game": "megamillions",
+   "date": "2026-09-25",
+   "result": null,
+   "scores": null,
+   "picks": {
+    "claude-opus": {
+     "label": "Claude Opus 5.5",
+     "model": "anthropic/claude-opus-5.5",
+     "picked_at": "2026-09-23T19:10:44+00:00",
+     "numbers": [
+      11,
+      19,
+      40,
+      52,
+      64
+     ],
+     "bonus": 12,
+     "strategy": "Mix overdue and unpopular numbers",
+     "rationale": "Drawings are random, so no pick has better odds. Choosing numbers above 31 and long-absent ones reduces jackpot-sharing risk. The hot Mega Ball adds variety.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "anthropic/claude-opus-5.5",
+     "cost_usd": 0.0044
+    },
+    "gpt": {
+     "label": "GPT-6 Sol",
+     "model": "openai/gpt-6-sol",
+     "picked_at": "2026-09-23T19:10:48+00:00",
+     "numbers": [
+      11,
+      28,
+      40,
+      59,
+      69
+     ],
+     "bonus": 12,
+     "strategy": "Mixed hot and long-absent numbers",
+     "rationale": "Includes one frequently drawn number and four long-absent numbers. Past results do not improve the odds of any combination.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "openai/gpt-6-sol",
+     "cost_usd": 0.0016
+    },
+    "gemini": {
+     "label": "Gemini 3.8 Flash",
+     "model": "google/gemini-3.8-flash",
+     "picked_at": "2026-09-23T19:10:50+00:00",
+     "numbers": [
+      11,
+      30,
+      43,
+      56,
+      69
+     ],
+     "bonus": 12,
+     "strategy": "Balanced hot and overdue blend",
+     "rationale": "Combines high-frequency performers 30, 43, and 56 with long-absent 11 and 69, alongside top-performing Mega Ball 12.",
+     "confidence": 35,
+     "attempts": 2,
+     "served_model": "google/gemini-3.8-flash",
+     "cost_usd": 0.001931
+    },
+    "grok": {
+     "label": "Grok 4.7",
+     "model": "x-ai/grok-4.7",
+     "picked_at": "2026-09-23T19:10:58+00:00",
+     "numbers": [
+      30,
+      34,
+      43,
+      49,
+      63
+     ],
+     "bonus": 12,
+     "strategy": "hot mix plus gap",
+     "rationale": "Blend frequent whites with a mid-gap pick; Mega Ball from recent hot list. Draws are random.",
+     "confidence": 8,
+     "attempts": 1,
+     "served_model": "x-ai/grok-4.7",
+     "cost_usd": 0.002712
+    },
+    "deepseek": {
+     "label": "DeepSeek",
+     "model": "deepseek/deepseek-chat",
+     "picked_at": "2026-09-23T19:11:03+00:00",
+     "numbers": [
+      16,
+      30,
+      34,
+      49,
+      63
+     ],
+     "bonus": 12,
+     "strategy": "Mix of hot and cold",
+     "rationale": "Combining frequently drawn numbers with those due for a win.",
+     "confidence": 65,
+     "attempts": 2,
+     "served_model": "deepseek/deepseek-chat",
+     "cost_usd": 0.000172
+    },
+    "random": {
+     "label": "Random quick pick",
+     "model": "baseline",
+     "picked_at": "2026-09-23T19:11:15+00:00",
+     "numbers": [
+      10,
+      19,
+      38,
+      42,
+      60
+     ],
+     "bonus": 21,
+     "strategy": "Uniform random (quick pick)",
+     "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+     "confidence": null
+    },
+    "hot": {
+     "label": "Hot-numbers bot",
+     "model": "baseline",
+     "picked_at": "2026-09-23T19:11:15+00:00",
+     "numbers": [
+      30,
+      34,
+      43,
+      48,
+      59
+     ],
+     "bonus": 12,
+     "strategy": "Hottest numbers, last 100 draws",
+     "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+     "confidence": null
+    }
+   },
+   "game_name": "Mega Millions",
+   "bonus_name": "Mega Ball"
+  },
   {
    "game": "powerball",
    "date": "2026-09-23",
