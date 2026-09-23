@@ -29,7 +29,7 @@ def score_pick(game_key: str, pick: Dict, draw: Dict) -> Dict:
     key = (whites, bonus)
     jackpot = key == (5, True)
     if jackpot:
-        prize = parse_money(draw.get("jackpot")) or 0
+        prize = draw.get("jackpot_usd") or parse_money(draw.get("jackpot")) or 0
     else:
         prize = era.prizes.get(key) or 0
         if prize and era.built_in_multiplier and draw.get("multiplier"):

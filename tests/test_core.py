@@ -74,6 +74,35 @@ def test_merge_skips_invalid():
     assert [m["date"] for m in merged] == ["2026-09-19"]
 
 
+NEW_CSV = """lottery,date,white_balls,bonus_ball,multiplier,jackpot,cash_value,jackpot_usd,cash_value_usd
+powerball,2026-09-19,18 30 41 45 68,10,2,298 Million,127.2 Million,298000000,127200000
+powerball,2026-09-21,02 07 09 17 58,20,2,314 Million,133.8 Million,314000000,133800000
+"""
+OLD_CSV = """lottery,date,jackpot,cash_value
+powerball,2025-11-24,N/A,N/A
+powerball,2025-11-22,$70 Million,$32.3 Million
+"""
+
+
+def test_parse_lotterywinners_both_schemas():
+    new = results.parse_lotterywinners_csv(NEW_CSV)
+    assert new["2026-09-21"] == {"jackpot": "314 Million", "cash_value": "133.8 Million",
+                                 "jackpot_usd": 314000000, "numbers": [2, 7, 9, 17, 58], "bonus": 20}
+    old = results.parse_lotterywinners_csv(OLD_CSV)
+    assert old == {"2025-11-22": {"jackpot": "$70 Million", "cash_value": "$32.3 Million"}}
+
+
+def test_reconcile_verifies_flags_and_fills(capsys):
+    lw = results.parse_lotterywinners_csv(NEW_CSV)
+    ny = [{"date": "2026-09-19", "numbers": [18, 30, 41, 45, 68], "bonus": 10, "source": "data.ny.gov"}]
+    out = results.reconcile("powerball", ny, lw)
+    assert out[0]["verified"] and out[0]["jackpot_usd"] == 298000000
+    assert out[1]["date"] == "2026-09-21" and out[1]["source"] == "lotterywinners"
+    bad = [{"date": "2026-09-19", "numbers": [1, 30, 41, 45, 68], "bonus": 10}]
+    assert results.reconcile("powerball", bad, lw)[0]["verified"] is False
+    assert "disagree" in capsys.readouterr().out
+
+
 # --- picks ---------------------------------------------------------------
 def test_extract_json_with_fences():
     assert extract_json('Sure!\n```json\n{"numbers":[1,2,3,4,5],"bonus":1}\n```') == \

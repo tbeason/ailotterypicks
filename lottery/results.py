@@ -3,8 +3,8 @@
 Primary source: New York State open data (Socrata), which republishes the
 official multi-state Powerball and Mega Millions results.
 
-Secondary source: the tbeason/lotterywinners scraped CSVs. They carry jackpot
-sizes (not numbers yet), which we attach to each draw when available.
+Secondary source: the tbeason/lotterywinners scraped CSVs: exact jackpots, plus
+winning numbers (newer CSVs) used to cross-check NY and to fill gaps.
 """
 from __future__ import annotations
 
@@ -67,19 +67,65 @@ def fetch_ny(game_key: str, limit: int = 60, since: Optional[str] = None) -> Lis
     return [r for r in out if r]
 
 
-def fetch_jackpots(game_key: str) -> Dict[str, Dict]:
-    """date -> {jackpot, cash_value} from the lotterywinners repo (best effort)."""
+def parse_lotterywinners_csv(text: str) -> Dict[str, Dict]:
+    """date -> fields from a tbeason/lotterywinners CSV.
+
+    Newer versions of the CSV carry `white_balls` ("02 07 09 17 58"),
+    `bonus_ball` and `jackpot_usd`; older ones only have jackpot strings.
+    """
+    out = {}
+    for row in csv.DictReader(io.StringIO(text)):
+        rec: Dict = {}
+        jp = (row.get("jackpot") or "").strip()
+        if jp and jp != "N/A":
+            rec["jackpot"] = jp
+            rec["cash_value"] = row.get("cash_value")
+        try:
+            if row.get("jackpot_usd"):
+                rec["jackpot_usd"] = int(float(row["jackpot_usd"]))
+        except ValueError:
+            pass
+        try:
+            whites = [int(x) for x in (row.get("white_balls") or "").split()]
+            if len(whites) == 5 and row.get("bonus_ball"):
+                rec["numbers"] = sorted(whites)
+                rec["bonus"] = int(row["bonus_ball"])
+        except ValueError:
+            pass
+        if rec and row.get("date"):
+            out[row["date"]] = rec
+    return out
+
+
+def fetch_lotterywinners(game_key: str) -> Dict[str, Dict]:
     try:
-        text = get_text(LOTTERYWINNERS_CSV[game_key])
+        return parse_lotterywinners_csv(get_text(LOTTERYWINNERS_CSV[game_key]))
     except HttpError as e:
         print(f"[warn] could not fetch lotterywinners CSV for {game_key}: {e}")
         return {}
-    out = {}
-    for row in csv.DictReader(io.StringIO(text)):
-        jp = (row.get("jackpot") or "").strip()
-        if jp and jp != "N/A":
-            out[row["date"]] = {"jackpot": jp, "cash_value": row.get("cash_value")}
-    return out
+
+
+def reconcile(game_key: str, draws: List[Dict], lw: Dict[str, Dict]) -> List[Dict]:
+    """Cross-check NY numbers against lotterywinners and fill gaps from it."""
+    by_date = {r["date"]: r for r in draws}
+    fallback = []
+    for d, rec in lw.items():
+        row = by_date.get(d)
+        extra = {k: v for k, v in rec.items() if k in ("jackpot", "cash_value", "jackpot_usd")}
+        if row is None:
+            if "numbers" in rec:
+                fallback.append({"date": d, "numbers": rec["numbers"], "bonus": rec["bonus"],
+                                 "multiplier": None, "source": "lotterywinners", **extra})
+            continue
+        row.update(extra)
+        if "numbers" in rec:
+            if (rec["numbers"], rec["bonus"]) == (row["numbers"], row["bonus"]):
+                row["verified"] = True
+            else:
+                row["verified"] = False
+                print(f"[warn] {game_key} {d}: sources disagree: NY {row['numbers']}+{row['bonus']} "
+                      f"vs lotterywinners {rec['numbers']}+{rec['bonus']}")
+    return merge_draws(draws, fallback, game_key) if fallback else draws
 
 
 def load_draws(game_key: str) -> List[Dict]:
@@ -128,12 +174,13 @@ def update(game_key: str, full: bool = False) -> List[Dict]:
     existing = load_draws(game_key)
     full = full or not existing  # first run backfills everything
     since = None if full else existing[-1]["date"]
-    new = fetch_ny(game_key, limit=5000 if full else 60, since=since)
+    try:
+        new = fetch_ny(game_key, limit=5000 if full else 60, since=since)
+    except HttpError as e:
+        print(f"[warn] NY open data unavailable for {game_key} ({e}); using lotterywinners only")
+        new = []
     draws = merge_draws(existing, new, game_key)
-    jackpots = fetch_jackpots(game_key)
-    for r in draws:
-        if r["date"] in jackpots:
-            r.update(jackpots[r["date"]])
+    draws = reconcile(game_key, draws, fetch_lotterywinners(game_key))
     save_draws(game_key, draws)
     print(f"{game_key}: {len(draws)} draws stored, latest {draws[-1]['date'] if draws else 'none'}")
     return draws
