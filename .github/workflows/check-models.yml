@@ -1,17 +1,20 @@
-name: Check model IDs
+name: Check model IDs and cost
 
+# Uses OpenRouter's public model list; no API key needed.
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 13 * * 1"  # weekly, Monday
 
+permissions:
+  contents: read
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt
-      - run: python -m lottery check-models
+          persist-credentials: false
+      - run: python3 -m lottery check-models

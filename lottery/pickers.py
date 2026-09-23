@@ -5,21 +5,24 @@ import json
 import os
 import re
 import secrets
-import time
 from collections import Counter
 from datetime import date
 from typing import Dict, List, Optional
 
-import requests
-
+from .budget import Budget, BudgetError
 from .games import GAMES
+from .http import HttpError, post_json, redact
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-MAX_ATTEMPTS = 3
+# Only these per-model params may come from config; anything that could raise
+# output length (max_completion_tokens, n, ...) is rejected.
+ALLOWED_PARAMS = {"temperature", "top_p", "reasoning", "provider", "seed"}
 
 
 class PickError(Exception):
-    pass
+    def __init__(self, message: str, cost: float = 0.0):
+        super().__init__(redact(message))
+        self.cost = cost
 
 
 def extract_json(text: str) -> Dict:
@@ -64,49 +67,65 @@ def validate_pick(game_key: str, draw_date: date, obj: Dict) -> Dict:
     return {
         "numbers": sorted(nums),
         "bonus": bonus,
-        "strategy": str(obj.get("strategy", ""))[:80],
-        "rationale": str(obj.get("rationale", ""))[:600],
+        "strategy": redact(str(obj.get("strategy", ""))[:80]),
+        "rationale": redact(str(obj.get("rationale", ""))[:400]),
         "confidence": conf,
     }
 
 
-def pick_openrouter(model: Dict, game_key: str, draw_date: date, prompt: Dict) -> Dict:
+def pick_openrouter(model: Dict, game_key: str, draw_date: date, prompt: Dict,
+                    budget: Optional[Budget] = None) -> Dict:
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         raise PickError("OPENROUTER_API_KEY not set")
+    if budget is None:
+        raise PickError("no budget configured; refusing to make a paid call")
     messages = [{"role": "system", "content": prompt["system"]},
                 {"role": "user", "content": prompt["user"]}]
+    attempts = int(budget.limits["max_attempts"])
+    spent = 0.0
     last_err = None
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        body = {"model": model["model"], "messages": messages,
-                **model.get("params", {})}
+    for attempt in range(1, attempts + 1):
         try:
-            resp = requests.post(
-                OPENROUTER_URL, json=body, timeout=180,
-                headers={"Authorization": f"Bearer {key}",
-                         "HTTP-Referer": "https://github.com/tbeason/ai-lottery-picks",
-                         "X-Title": "AI Lottery Picks"})
-            resp.raise_for_status()
-            data = resp.json()
+            budget.approve(model["model"], sum(len(m["content"]) for m in messages))
+        except BudgetError as e:
+            raise PickError(str(e), cost=spent) from None
+        params = model.get("params", {})
+        bad = set(params) - ALLOWED_PARAMS
+        if bad:
+            raise PickError(f"disallowed params in config: {sorted(bad)}")
+        body = {**params, "model": model["model"], "messages": messages,
+                "max_tokens": int(budget.limits["max_output_tokens"]),
+                "usage": {"include": True}}
+        try:
+            data = post_json(OPENROUTER_URL, body, timeout=120, headers={
+                "Authorization": f"Bearer {key}",
+                "HTTP-Referer": "https://github.com/tbeason/ai-lottery-picks",
+                "X-Title": "AI Lottery Picks"})
+        except HttpError as e:
+            # Don't retry paid calls on transport errors; next scheduled run will.
+            raise PickError(f"API error: {e}", cost=spent) from None
+        cost = budget.actual_cost(model["model"], data.get("usage") or {})
+        budget.record(cost)
+        spent += cost
+        try:
             reply = data["choices"][0]["message"].get("content") or ""
-        except (requests.RequestException, KeyError, IndexError, ValueError) as e:
-            last_err = f"API error: {e}"
-            time.sleep(2 ** attempt)
+        except (KeyError, IndexError, TypeError):
+            last_err = "malformed API response"
             continue
         try:
             pick = validate_pick(game_key, draw_date, extract_json(reply))
         except PickError as e:
             last_err = str(e)
-            # Tell the model what was wrong and let it try again.
-            messages += [{"role": "assistant", "content": reply},
-                         {"role": "user", "content": f"That was invalid: {e}. "
-                          "Reply again with only the corrected JSON object."}]
+            messages += [{"role": "assistant", "content": reply[:1000]},
+                         {"role": "user", "content": f"Invalid: {e}. Reply with only the corrected JSON."}]
             continue
         pick["attempts"] = attempt
-        pick["served_model"] = data.get("model", model["model"])
-        pick["raw_reply"] = reply[:4000]
+        pick["served_model"] = str(data.get("model", model["model"]))[:100]
+        pick["cost_usd"] = round(spent, 6)
+        pick["raw_reply"] = redact(reply[:2000])
         return pick
-    raise PickError(f"failed after {MAX_ATTEMPTS} attempts: {last_err}")
+    raise PickError(f"failed after {attempts} attempts: {last_err}", cost=spent)
 
 
 def pick_random(model: Dict, game_key: str, draw_date: date, prompt: Dict) -> Dict:

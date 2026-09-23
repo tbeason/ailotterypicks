@@ -14,10 +14,10 @@ baseline except by luck. The leaderboard is a noise generator. The rationales ar
       [tbeason/lotterywinners](https://github.com/tbeason/lotterywinners).
    2. Score every stored pick whose drawing now has results.
    3. If tonight has a drawing, send every contestant the **same prompt**
-      (`lottery/prompt.py`). The prompt contains the rules, the last 20 drawings, frequency
-      tables for the last 100, and the longest-absent numbers. Each contestant must return
+      (`lottery/prompt.py`). The prompt contains the rules, the last 10 drawings, and the hot, cold and
+      longest-absent numbers from the last 100. Each contestant must return
       JSON: `numbers`, `bonus`, `strategy`, `rationale`, `confidence`. Invalid replies are sent
-      back with the error, up to 3 attempts.
+      back with the error, up to 2 attempts.
    4. Commit picks to `data/picks/<game>/<date>.json` **before the drawing**. The commit
       timestamp is the proof that picks weren't changed after the fact. The full prompt is
       stored in the same file.
@@ -37,19 +37,43 @@ OpenRouter model IDs change. Run the **Check model IDs** workflow (or
 vendor whose model it can't find. Optional per-model API parameters go in a `"params"` object,
 e.g. `{"temperature": 1.0}`.
 
+## Cost
+
+Costs are capped in code (`lottery/budget.py`, limits in `config/models.json`). Nothing is sent
+unless every check passes:
+
+- The prompt is compact: about 840 characters, roughly 300 tokens. A test fails if it grows
+  past 900 characters.
+- Output is capped at `max_output_tokens` (200). Config can't raise it: per-model `params` are
+  allowlisted. Reasoning models get `reasoning.effort: low`.
+- At most 2 attempts per model per drawing. Network errors aren't retried.
+- Before each call, the worst case (live OpenRouter prices × estimated input × output cap ×
+  attempts) must be under `max_cost_per_call_usd` ($0.02). Otherwise the model is skipped.
+  Unpriced models are refused.
+- Actual cost (`usage.cost`) is recorded in every pick file. Once `monthly_limit_usd` ($2)
+  would be exceeded, picking stops until next month.
+- The key itself should have a credit limit (see [SECURITY.md](SECURITY.md)).
+
+Rough estimate: about 22 drawings a month × 5 models × a fraction of a cent, which is well under
+$1 a month for typical models. The **Check model IDs and cost** workflow prints each model's
+worst-case cost per call.
+
 ## Setup
 
-1. Add repository secret `OPENROUTER_API_KEY`.
-2. Settings → Pages → Source: **GitHub Actions**.
-3. Actions → *Daily picks and results* → **Run workflow**. The first run backfills the
+1. Create an OpenRouter key for this repo only, with a small **credit limit** and no auto
+   top-up.
+2. Settings → Environments → New environment `openrouter`. Deployment branches: `main` only.
+   Add environment secret `OPENROUTER_API_KEY`.
+3. Settings → Pages → Source: **GitHub Actions**.
+4. Settings → Code security: enable secret scanning + push protection.
+5. Actions → *Check model IDs and cost* → Run. Fix any `MISSING` IDs in `config/models.json`.
+6. Actions → *Daily picks and results* → **Run workflow**. The first run backfills the
    drawing history.
-
-Cost: roughly 5 drawings a week × each model × ~3k tokens.
 
 ## Local
 
 ```bash
-pip install -r requirements.txt pytest
+pip install -r requirements-dev.txt   # runtime is stdlib-only
 python -m pytest -q
 python -m lottery update-results            # needs network
 python -m lottery pick --date 2026-09-23    # needs OPENROUTER_API_KEY for LLMs

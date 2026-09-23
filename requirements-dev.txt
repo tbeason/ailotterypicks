@@ -1,0 +1,3 @@
+# Runtime needs only the Python standard library (by design; see SECURITY.md).
+# This file is for running tests locally / in the Tests workflow.
+pytest==9.1.1

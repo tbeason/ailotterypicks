@@ -1,16 +1,21 @@
 import json
 import random
 from datetime import date, timedelta
-from unittest import mock
+from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
 import lottery.__main__ as cli
 from lottery import results
 from lottery.games import GAMES, MEGA_MILLIONS, POWERBALL
-from lottery.pickers import PickError, extract_json, pick_hot, pick_openrouter, pick_random, validate_pick
+from lottery.budget import Budget, BudgetError
+from lottery.http import redact
+from lottery.pickers import ALLOWED_PARAMS, PickError, extract_json, pick_hot, pick_openrouter, pick_random, validate_pick
 from lottery.prompt import build_prompt
 from lottery.scoring import expected_random, parse_money, score_pick
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def fake_history(game_key, n=150, end=date(2026, 9, 21), seed=1):
@@ -103,32 +108,160 @@ def test_random_and_hot_are_valid():
     assert pick_hot({}, "powerball", d, {}, history=hist) == pick_hot({}, "powerball", d, {}, history=hist)
 
 
-def test_openrouter_retries_on_invalid_reply(monkeypatch):
-    monkeypatch.setenv("OPENROUTER_API_KEY", "x")
-    replies = iter(['{"numbers":[1,2,3],"bonus":1}',
-                    '{"numbers":[9,2,3,4,5],"bonus":1,"strategy":"s","rationale":"r","confidence":150}'])
+PRICING = {"vendor/m": {"prompt": 1e-6, "completion": 4e-6, "request": 0},
+           "vendor/pricey": {"prompt": 60e-6, "completion": 240e-6, "request": 0}}
+
+
+def make_budget(tmp_path, **limits):
+    return Budget.load({"budget": limits}, tmp_path, pricing=PRICING)
+
+
+def fake_api(monkeypatch, replies, cost=0.0003):
     calls = []
+    replies = iter(replies)
 
-    def fake_post(url, json, timeout, headers):
-        calls.append(json["messages"])
-        m = mock.Mock()
-        m.raise_for_status.return_value = None
-        m.json.return_value = {"model": "vendor/m", "choices": [{"message": {"content": next(replies)}}]}
-        return m
+    def fake_post(url, body, headers, timeout):
+        calls.append(body)
+        return {"model": body["model"], "usage": {"cost": cost},
+                "choices": [{"message": {"content": next(replies)}}]}
 
-    monkeypatch.setattr("lottery.pickers.requests.post", fake_post)
-    p = pick_openrouter({"model": "vendor/m"}, "powerball", date(2026, 9, 23), {"system": "s", "user": "u"})
+    monkeypatch.setattr("lottery.pickers.post_json", fake_post)
+    return calls
+
+
+def test_openrouter_retries_on_invalid_reply(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey123456")
+    calls = fake_api(monkeypatch, ['{"numbers":[1,2,3],"bonus":1}',
+                                   '{"numbers":[9,2,3,4,5],"bonus":1,"confidence":150}'])
+    b = make_budget(tmp_path)
+    p = pick_openrouter({"model": "vendor/m"}, "powerball", date(2026, 9, 23),
+                        {"system": "s", "user": "u"}, budget=b)
     assert p["numbers"] == [2, 3, 4, 5, 9] and p["attempts"] == 2 and p["confidence"] == 100
-    assert "invalid" in calls[1][-1]["content"]
+    assert "Invalid" in calls[1]["messages"][-1]["content"]
+    assert all(c["max_tokens"] == 200 for c in calls)
+    assert p["cost_usd"] == 0.0006 and b.run_spent == 0.0006
+
+
+def test_openrouter_gives_up_after_max_attempts(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey123456")
+    calls = fake_api(monkeypatch, ["nope"] * 5)
+    with pytest.raises(PickError) as e:
+        pick_openrouter({"model": "vendor/m"}, "powerball", date(2026, 9, 23),
+                        {"system": "s", "user": "u"}, budget=make_budget(tmp_path))
+    assert len(calls) == 2 and e.value.cost == pytest.approx(0.0006)
+
+
+def test_openrouter_requires_budget(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey123456")
+    calls = fake_api(monkeypatch, ["{}"])
+    with pytest.raises(PickError, match="budget"):
+        pick_openrouter({"model": "vendor/m"}, "powerball", date(2026, 9, 23), {"system": "s", "user": "u"})
+    assert calls == []
+
+
+# --- cost limits ---------------------------------------------------------
+def test_budget_blocks_expensive_model(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey123456")
+    calls = fake_api(monkeypatch, ["{}"])
+    with pytest.raises(PickError, match="per-call cap"):
+        pick_openrouter({"model": "vendor/pricey"}, "powerball", date(2026, 9, 23),
+                        {"system": "s", "user": "u" * 1000}, budget=make_budget(tmp_path))
+    assert calls == []
+
+
+def test_budget_blocks_unknown_model(tmp_path):
+    with pytest.raises(BudgetError, match="not in OpenRouter price list"):
+        make_budget(tmp_path).approve("vendor/unknown", 100)
+
+
+def test_budget_monthly_limit_counts_committed_spend(tmp_path):
+    month = datetime.now(timezone.utc).strftime("%Y-%m")
+    (tmp_path / "powerball").mkdir()
+    (tmp_path / "powerball" / "x.json").write_text(json.dumps({"picks": {
+        "a": {"picked_at": f"{month}-01T00:00:00+00:00", "cost_usd": 1.999},
+        "b": {"picked_at": "1999-01-01T00:00:00+00:00", "cost_usd": 50}}}))
+    b = make_budget(tmp_path, monthly_limit_usd=2.0)
+    assert b.month_spent == pytest.approx(1.999)
+    with pytest.raises(BudgetError, match="monthly limit"):
+        b.approve("vendor/m", 1000)
+
+
+def test_config_params_cannot_raise_output_cap(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey123456")
+    calls = fake_api(monkeypatch, ["{}"])
+    with pytest.raises(PickError, match="disallowed"):
+        pick_openrouter({"model": "vendor/m", "params": {"max_completion_tokens": 99999}},
+                        "powerball", date(2026, 9, 23), {"system": "s", "user": "u"},
+                        budget=make_budget(tmp_path))
+    assert calls == []
+
+
+def test_shipped_config_is_within_budget():
+    cfg = json.loads((ROOT / "config" / "models.json").read_text())
+    lim = cfg["budget"]
+    assert lim["max_output_tokens"] <= 200 and lim["max_attempts"] <= 2
+    assert lim["max_cost_per_call_usd"] <= 0.02 and lim["monthly_limit_usd"] <= 5
+    for c in cfg["contestants"]:
+        assert set(c.get("params", {})) <= ALLOWED_PARAMS
+
+
+# --- secrets -------------------------------------------------------------
+def test_redact(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "abcdefgh12345678")
+    s = redact("key abcdefgh12345678 and sk-or-v1-deadbeefdeadbeef and Bearer xyz123456789")
+    assert "abcdefgh" not in s and "deadbeef" not in s and "xyz123" not in s
+
+
+def test_model_reply_with_key_is_redacted(monkeypatch, tmp_path):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-supersecretvalue")
+    fake_api(monkeypatch, ['{"numbers":[1,2,3,4,5],"bonus":1,'
+                           '"rationale":"my key is sk-or-v1-supersecretvalue"}'])
+    p = pick_openrouter({"model": "vendor/m"}, "powerball", date(2026, 9, 23),
+                        {"system": "s", "user": "u"}, budget=make_budget(tmp_path))
+    assert "supersecret" not in json.dumps(p)
+
+
+def test_no_secrets_in_repo():
+    import re
+    import subprocess
+    pat = re.compile(r"sk-or-v1-[0-9a-f]{20,}|sk-[A-Za-z0-9]{32,}|ghp_[A-Za-z0-9]{30,}")
+    try:
+        files = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True,
+                               text=True, check=True).stdout.split()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pytest.skip("not a git checkout")
+    for f in files:
+        p = ROOT / f
+        if p.is_file() and p.suffix != ".py":  # tests contain fake keys
+            assert not pat.search(p.read_text(errors="ignore")), f"possible secret in {f}"
+
+
+def test_no_third_party_imports():
+    """The job holding the API key must run only stdlib code."""
+    import ast
+    import sys
+    for f in (ROOT / "lottery").glob("*.py"):
+        for node in ast.walk(ast.parse(f.read_text())):
+            names = ([a.name for a in node.names] if isinstance(node, ast.Import)
+                     else [node.module] if isinstance(node, ast.ImportFrom) and node.level == 0 else [])
+            for n in names:
+                top = n.split(".")[0]
+                assert top in sys.stdlib_module_names or top == "__future__", f"{f.name} imports {n}"
 
 
 # --- prompt --------------------------------------------------------------
-def test_prompt_excludes_future_and_other_era():
+def test_prompt_excludes_future_and_uses_era_ranges():
     hist = fake_history("megamillions", n=200, end=date(2026, 9, 29))
     p = build_prompt("megamillions", date(2026, 9, 25), hist)["user"]
     assert "2026-09-29" not in p
-    assert "Mega Ball from 1 to 24" in p
-    assert "24:" in p and "25:" not in p.split("MEGA BALL FREQUENCY")[1].split("\n\n")[0]
+    assert "1 Mega Ball 1-24" in p
+
+
+@pytest.mark.parametrize("game", ["powerball", "megamillions"])
+def test_prompt_is_small(game):
+    p = build_prompt(game, date(2026, 9, 25), fake_history(game, n=300, end=date(2026, 9, 24)))
+    total = len(p["system"]) + len(p["user"])
+    assert total < 900, total  # roughly <= 350 tokens
 
 
 # --- scoring -------------------------------------------------------------
@@ -174,7 +307,7 @@ def test_pick_score_build(tmp_path, monkeypatch):
     rec = cli.run_picks("powerball", d)
     assert "numbers" in rec["picks"]["random"] and "numbers" in rec["picks"]["hot"]
     assert "error" in rec["picks"]["claude-opus"]  # no API key -> recorded error, no crash
-    assert "LONGEST-ABSENT" in rec["prompt"]["user"]
+    assert "longest absent" in rec["prompt"]["user"]
 
     results.save_draws("powerball", hist + [
         {"date": d.isoformat(), "numbers": rec["picks"]["random"]["numbers"],

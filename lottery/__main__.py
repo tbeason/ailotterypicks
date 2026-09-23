@@ -18,10 +18,10 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from zoneinfo import ZoneInfo
 
-import requests
-
 from . import results
+from .budget import Budget, BudgetError, fetch_pricing
 from .games import GAMES
+from .http import HttpError
 from .pickers import PROVIDERS, PickError
 from .prompt import build_prompt
 from .scoring import expected_random, score_pick
@@ -35,8 +35,12 @@ ET = ZoneInfo("America/New_York")
 PICK_CUTOFF_HOUR_ET = 21
 
 
+def load_config() -> Dict:
+    return json.loads(CONFIG.read_text())
+
+
 def load_contestants(enabled_only: bool = True) -> List[Dict]:
-    cs = json.loads(CONFIG.read_text())["contestants"]
+    cs = load_config()["contestants"]
     return [c for c in cs if c.get("enabled") or not enabled_only]
 
 
@@ -62,11 +66,12 @@ def cmd_update_results(args) -> None:
     for g in GAMES:
         try:
             results.update(g, full=args.full)
-        except requests.RequestException as e:
+        except HttpError as e:
             print(f"[error] {g}: {e}", file=sys.stderr)
 
 
-def run_picks(game_key: str, d: date, only: Optional[str] = None, force: bool = False) -> Optional[Dict]:
+def run_picks(game_key: str, d: date, only: Optional[str] = None, force: bool = False,
+              budget: Optional[Budget] = None) -> Optional[Dict]:
     path = picks_path(game_key, d.isoformat())
     history = results.load_draws(game_key)
     if any(h["date"] == d.isoformat() for h in history):
@@ -87,12 +92,14 @@ def run_picks(game_key: str, d: date, only: Optional[str] = None, force: bool = 
             continue
         fn = PROVIDERS[c["provider"]]
         kwargs = {"history": history} if c["provider"] == "hot" else {}
+        if c["provider"] == "openrouter":
+            kwargs["budget"] = budget
         stamp = datetime.now(timezone.utc).isoformat(timespec="seconds")
         try:
             pick = fn(c, game_key, d, prompt, **kwargs)
             print(f"  {c['id']:<12} {pick['numbers']} + {pick['bonus']}")
         except PickError as e:
-            pick = {"error": str(e)}
+            pick = {"error": str(e), "cost_usd": round(e.cost, 6)}
             print(f"  {c['id']:<12} ERROR {e}")
         rec["picks"][c["id"]] = {"label": c["label"], "model": c["model"],
                                  "picked_at": stamp, **pick}
@@ -106,13 +113,23 @@ def cmd_pick(args) -> None:
     if not args.date and now.hour >= PICK_CUTOFF_HOUR_ET:
         print(f"Past {PICK_CUTOFF_HOUR_ET}:00 ET; too close to the drawing. Skipping.")
         return
-    for g, game in GAMES.items():
-        if args.game and g != args.game:
-            continue
-        if not game.is_draw_day(d):
-            continue
-        print(f"{game.name} {d}:")
-        run_picks(g, d, only=args.only, force=args.force)
+    games = [g for g, game in GAMES.items()
+             if (not args.game or g == args.game) and game.is_draw_day(d)]
+    if not games:
+        return
+    budget = None
+    if any(c["provider"] == "openrouter" for c in load_contestants()):
+        try:
+            budget = Budget.load(load_config(), PICKS_DIR)
+            print(f"Budget: ${budget.month_spent:.4f} spent this month of "
+                  f"${budget.limits['monthly_limit_usd']:.2f}")
+        except (HttpError, BudgetError) as e:
+            print(f"[warn] no budget ({e}); LLM contestants will be skipped")
+    for g in games:
+        print(f"{GAMES[g].name} {d}:")
+        run_picks(g, d, only=args.only, force=args.force, budget=budget)
+    if budget:
+        print(f"This run spent ${budget.run_spent:.4f}")
 
 
 def cmd_score(args) -> None:
@@ -182,22 +199,29 @@ def cmd_build_site(args) -> None:
 
 
 def cmd_check_models(args) -> None:
-    resp = requests.get("https://openrouter.ai/api/v1/models", timeout=30)
-    resp.raise_for_status()
-    ids = {m["id"] for m in resp.json()["data"]}
+    """Verify model IDs exist and show each one's worst-case cost per call."""
+    pricing = fetch_pricing()
+    budget = Budget.load(load_config(), PICKS_DIR, pricing=pricing)
+    sample = build_prompt("powerball", now_et().date(), results.load_draws("powerball"))
+    chars = len(sample["system"]) + len(sample["user"])
     bad = 0
     for c in load_contestants():
         if c["provider"] != "openrouter":
             continue
-        if c["model"] in ids:
-            print(f"ok       {c['model']}")
-        else:
+        if c["model"] not in pricing:
             bad += 1
             vendor = c["model"].split("/")[0]
-            near = sorted(i for i in ids if i.startswith(vendor + "/"))[-15:]
+            near = sorted(i for i in pricing if i.startswith(vendor + "/"))[-15:]
             print(f"MISSING  {c['model']}\n         {vendor} models: {', '.join(near)}")
+            continue
+        try:
+            wc = budget.approve(c["model"], chars)
+            print(f"ok       {c['model']:<40} worst case ${wc:.5f}/call")
+        except BudgetError as e:
+            bad += 1
+            print(f"TOO EXPENSIVE  {e}")
     if bad:
-        raise SystemExit(f"{bad} model id(s) not found on OpenRouter")
+        raise SystemExit(f"{bad} model(s) missing or over budget")
 
 
 def cmd_daily(args) -> None:

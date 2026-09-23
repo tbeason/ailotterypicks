@@ -1,9 +1,16 @@
 {
   "_comment": "OpenRouter model IDs change often. Run `python -m lottery check-models` (or the 'Check models' workflow) to verify every enabled ID exists before relying on it.",
+  "budget": {
+    "_comment": "Hard limits enforced in code before every call. Also set a credit limit on the OpenRouter key itself.",
+    "max_output_tokens": 200,
+    "max_attempts": 2,
+    "max_cost_per_call_usd": 0.02,
+    "monthly_limit_usd": 2.00
+  },
   "contestants": [
     {"id": "claude-opus",  "label": "Claude Opus 5.5", "provider": "openrouter", "model": "anthropic/claude-opus-5.5", "enabled": true},
-    {"id": "gpt",          "label": "GPT-6",           "provider": "openrouter", "model": "openai/gpt-6",               "enabled": true},
-    {"id": "gemini",       "label": "Gemini",          "provider": "openrouter", "model": "google/gemini-3-pro",        "enabled": true},
+    {"id": "gpt",          "label": "GPT-6",           "provider": "openrouter", "model": "openai/gpt-6",               "enabled": true, "params": {"reasoning": {"effort": "low", "exclude": true}}},
+    {"id": "gemini",       "label": "Gemini",          "provider": "openrouter", "model": "google/gemini-3-pro",        "enabled": true, "params": {"reasoning": {"effort": "low", "exclude": true}}},
     {"id": "grok",         "label": "Grok",            "provider": "openrouter", "model": "x-ai/grok-4",                "enabled": true},
     {"id": "deepseek",     "label": "DeepSeek",        "provider": "openrouter", "model": "deepseek/deepseek-chat",     "enabled": true},
     {"id": "jev",          "label": "Jev (TypeSafe AI)", "provider": "jev",      "model": "jev",                        "enabled": false},

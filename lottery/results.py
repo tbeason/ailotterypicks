@@ -15,9 +15,8 @@ from datetime import date
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-import requests
-
 from .games import GAMES
+from .http import HttpError, get_json, get_text
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DRAWS_DIR = DATA_DIR / "draws"
@@ -31,9 +30,6 @@ LOTTERYWINNERS_CSV = {
     "powerball": "https://raw.githubusercontent.com/tbeason/lotterywinners/main/powerball_all_history.csv",
     "megamillions": "https://raw.githubusercontent.com/tbeason/lotterywinners/main/megamillions_all_history.csv",
 }
-
-TIMEOUT = 30
-
 
 def parse_ny_record(game_key: str, rec: Dict) -> Optional[Dict]:
     """Convert one NY open-data row to our draw format.
@@ -67,22 +63,19 @@ def fetch_ny(game_key: str, limit: int = 60, since: Optional[str] = None) -> Lis
     params = {"$order": "draw_date DESC", "$limit": str(limit)}
     if since:
         params["$where"] = f"draw_date >= '{since}T00:00:00'"
-    resp = requests.get(NY_DATASETS[game_key], params=params, timeout=TIMEOUT)
-    resp.raise_for_status()
-    out = [parse_ny_record(game_key, r) for r in resp.json()]
+    out = [parse_ny_record(game_key, r) for r in get_json(NY_DATASETS[game_key], params)]
     return [r for r in out if r]
 
 
 def fetch_jackpots(game_key: str) -> Dict[str, Dict]:
     """date -> {jackpot, cash_value} from the lotterywinners repo (best effort)."""
     try:
-        resp = requests.get(LOTTERYWINNERS_CSV[game_key], timeout=TIMEOUT)
-        resp.raise_for_status()
-    except requests.RequestException as e:
+        text = get_text(LOTTERYWINNERS_CSV[game_key])
+    except HttpError as e:
         print(f"[warn] could not fetch lotterywinners CSV for {game_key}: {e}")
         return {}
     out = {}
-    for row in csv.DictReader(io.StringIO(resp.text)):
+    for row in csv.DictReader(io.StringIO(text)):
         jp = (row.get("jackpot") or "").strip()
         if jp and jp != "N/A":
             out[row["date"]] = {"jackpot": jp, "cash_value": row.get("cash_value")}

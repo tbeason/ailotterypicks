@@ -2,6 +2,9 @@
 
 Every model gets the exact same prompt for a given drawing. The prompt text is
 saved next to the picks so anyone can audit what the models saw.
+
+Kept deliberately compact (~700 characters) because input tokens cost money
+on every call; `tests/test_core.py` enforces an upper bound.
 """
 from __future__ import annotations
 
@@ -11,71 +14,45 @@ from typing import Dict, List
 
 from .games import GAMES
 
-PROMPT_VERSION = 1
-RECENT_DRAWS = 20
+PROMPT_VERSION = 2
+RECENT_DRAWS = 10
 STATS_WINDOW = 100
+TOP_N = 8
 
-SYSTEM = (
-    "You are a contestant in a public, just-for-fun experiment where AI models "
-    "pick lottery numbers before each real drawing. Your pick is recorded before "
-    "the drawing and scored afterwards on a public leaderboard. Use any "
-    "reasoning or strategy you like. Respond with a single JSON object and "
-    "nothing else."
-)
+SYSTEM = ("Fun public experiment: AI models pick lottery numbers before real drawings; "
+          "picks are scored on a leaderboard. Use any strategy. Reply with JSON only.")
 
 
-def _fmt_draw(d: Dict, bonus_name: str) -> str:
-    whites = " ".join(f"{n:02d}" for n in d["numbers"])
-    extra = f"  (jackpot {d['jackpot']})" if d.get("jackpot") else ""
-    return f"{d['date']}  {whites}  {bonus_name}: {d['bonus']:02d}{extra}"
-
-
-def build_prompt(game_key: str, draw_date: date, history: List[Dict]) -> Dict[str, str]:
+def build_prompt(game_key: str, draw_date: date, history: List[Dict]) -> Dict:
     game = GAMES[game_key]
     era = game.era_for(draw_date)
     past = [h for h in history if h["date"] < draw_date.isoformat()]
-    # Frequency stats only use drawings under the current number ranges.
+    # Stats only use drawings under the current number ranges.
     same_era = [h for h in past if date.fromisoformat(h["date"]) >= era.start]
     window = same_era[-STATS_WINDOW:]
 
-    white_freq = Counter(n for h in window for n in h["numbers"])
-    bonus_freq = Counter(h["bonus"] for h in window)
+    wf = Counter(n for h in window for n in h["numbers"])
+    bf = Counter(h["bonus"] for h in window)
     last_seen: Dict[int, int] = {}
     for i, h in enumerate(reversed(same_era)):
         for n in h["numbers"]:
             last_seen.setdefault(n, i)
 
-    def freq_line(freq: Counter, hi: int) -> str:
-        return ", ".join(f"{n}:{freq.get(n, 0)}" for n in range(1, hi + 1))
+    def top(freq: Counter, hi: int, reverse: bool) -> str:
+        order = sorted(range(1, hi + 1), key=lambda n: ((-1 if reverse else 1) * freq[n], n))
+        return " ".join(str(n) for n in order[:TOP_N])
 
     overdue = sorted(range(1, era.white_max + 1),
-                     key=lambda n: -last_seen.get(n, len(same_era)))[:10]
-    recent = "\n".join(_fmt_draw(h, game.bonus_name) for h in reversed(past[-RECENT_DRAWS:]))
+                     key=lambda n: (-last_seen.get(n, len(same_era)), n))[:TOP_N]
+    recent = "\n".join(
+        f"{h['date']} {' '.join(str(n) for n in h['numbers'])} | {h['bonus']}"
+        for h in reversed(past[-RECENT_DRAWS:]))
 
-    user = f"""GAME: {game.name}
-DRAWING DATE: {draw_date.isoformat()} ({draw_date.strftime('%A')})
-RULES: Choose {game.white_count} distinct white-ball numbers from 1 to {era.white_max} \
-and 1 {game.bonus_name} from 1 to {era.bonus_max}. Ticket price ${era.ticket_price}.
-Jackpot = all {game.white_count} white balls + {game.bonus_name}. Order of white balls does not matter.
-
-MOST RECENT {min(RECENT_DRAWS, len(past))} DRAWINGS (newest first):
-{recent or '(none available)'}
-
-WHITE-BALL FREQUENCY over the last {len(window)} drawings (number:count):
-{freq_line(white_freq, era.white_max)}
-
-{game.bonus_name.upper()} FREQUENCY over the last {len(window)} drawings (number:count):
-{freq_line(bonus_freq, era.bonus_max)}
-
-LONGEST-ABSENT WHITE BALLS (drawings since last seen):
-{", ".join(f"{n}:{last_seen.get(n, len(same_era))}" for n in overdue)}
-
-Respond with ONLY this JSON object:
-{{
-  "numbers": [five distinct integers 1-{era.white_max}],
-  "bonus": integer 1-{era.bonus_max},
-  "strategy": "a short name for your approach (max 6 words)",
-  "rationale": "why you chose these numbers (max 60 words)",
-  "confidence": integer 0-100, your honest confidence this ticket wins any prize
-}}"""
+    user = f"""{game.name}, drawing {draw_date.isoformat()}.
+Pick 5 distinct numbers 1-{era.white_max} and 1 {game.bonus_name} 1-{era.bonus_max}.
+Last {min(RECENT_DRAWS, len(past))} drawings (newest first, {game.bonus_name} after |):
+{recent or 'none'}
+Last {len(window)} drawings: hot {top(wf, era.white_max, True)}; cold {top(wf, era.white_max, False)}; \
+{game.bonus_name} hot {top(bf, era.bonus_max, True)}; longest absent {" ".join(map(str, overdue))}
+JSON: {{"numbers":[5 ints],"bonus":int,"strategy":"<=6 words","rationale":"<=30 words","confidence":0-100}}"""
     return {"system": SYSTEM, "user": user, "version": PROMPT_VERSION}
