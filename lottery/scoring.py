@@ -6,7 +6,7 @@ from datetime import date
 from math import comb
 from typing import Dict, Optional
 
-from .games import GAMES
+from .games import GAMES, TIER_COLUMNS
 
 
 def parse_money(s: Optional[str]) -> Optional[int]:
@@ -28,14 +28,20 @@ def score_pick(game_key: str, pick: Dict, draw: Dict) -> Dict:
     bonus = pick["bonus"] == draw["bonus"]
     key = (whites, bonus)
     jackpot = key == (5, True)
+    official = draw.get("prizes") or {}
     if jackpot:
         prize = draw.get("jackpot_usd") or parse_money(draw.get("jackpot")) or 0
+        source = "official" if draw.get("jackpot_usd") else "advertised"
+    elif key not in TIER_COLUMNS:
+        prize, source = 0, "none"
+    elif TIER_COLUMNS[key] in official:
+        # Per-drawing official prize (lotterywinners CSV). Differs from the
+        # table only if the lottery changes its prize matrix.
+        prize, source = official[TIER_COLUMNS[key]], "official"
     else:
-        prize = era.prizes.get(key) or 0
-        if prize and era.built_in_multiplier and draw.get("multiplier"):
-            prize *= draw["multiplier"]
+        prize, source = era.prizes.get(key) or 0, "table"
     return {"white_matches": whites, "bonus_match": bonus, "prize": prize,
-            "jackpot": jackpot, "cost": era.ticket_price}
+            "prize_source": source, "jackpot": jackpot, "cost": era.ticket_price}
 
 
 def expected_random(game_key: str, d: date) -> Dict:

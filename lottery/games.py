@@ -21,8 +21,6 @@ class Era:
     # (white_matches, bonus_matched) -> prize in dollars. The jackpot is keyed
     # (5, True) with value None because it is parimutuel/variable.
     prizes: Dict[Tuple[int, bool], Optional[int]] = field(default_factory=dict)
-    # True when every ticket includes the multiplier (Mega Millions since 2025).
-    built_in_multiplier: bool = False
 
 
 @dataclass(frozen=True)
@@ -97,17 +95,26 @@ MEGA_MILLIONS = Game(
             (4, False): 500, (3, True): 200, (3, False): 10, (2, True): 10,
             (1, True): 4, (0, True): 2,
         }),
-        # April 2025 redesign: $5 ticket, Mega Ball 1-24, built-in multiplier.
-        # These are base prizes before the multiplier.
+        # April 2025 redesign: $5 ticket, Mega Ball 1-24, and a random 2x-10x
+        # multiplier on every *ticket* (not per drawing). Our picks are
+        # hypothetical tickets with no multiplier, so we score them at the
+        # guaranteed 2x minimum, the same figures megamillions.com lists.
         Era(date(2025, 4, 8), 70, 24, 5, (1, 4), {
-            (5, True): None, (5, False): 1_000_000, (4, True): 10_000,
-            (4, False): 500, (3, True): 200, (3, False): 10, (2, True): 10,
-            (1, True): 7, (0, True): 5,
-        }, built_in_multiplier=True),
+            (5, True): None, (5, False): 2_000_000, (4, True): 20_000,
+            (4, False): 1_000, (3, True): 400, (3, False): 20, (2, True): 20,
+            (1, True): 14, (0, True): 10,
+        }),
     ),
     home_url="https://www.megamillions.com",
     results_url=("https://www.megamillions.com/Winning-Numbers/Previous-Drawings/"
                  "Previous-Drawing-Page.aspx?date={ticks}"),
 )
+
+# Prize tier -> column prefix in the tbeason/lotterywinners CSVs.
+TIER_COLUMNS: Dict[Tuple[int, bool], str] = {
+    (5, True): "match_5_bonus", (5, False): "match_5", (4, True): "match_4_bonus",
+    (4, False): "match_4", (3, True): "match_3_bonus", (3, False): "match_3",
+    (2, True): "match_2_bonus", (1, True): "match_1_bonus", (0, True): "match_0_bonus",
+}
 
 GAMES: Dict[str, Game] = {g.key: g for g in (POWERBALL, MEGA_MILLIONS)}

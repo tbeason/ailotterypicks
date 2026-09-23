@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-from .games import GAMES
+from .games import GAMES, TIER_COLUMNS
 from .http import HttpError, get_json, get_text
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -85,6 +85,16 @@ def parse_lotterywinners_csv(text: str) -> Dict[str, Dict]:
                 rec["jackpot_usd"] = int(float(row["jackpot_usd"]))
         except ValueError:
             pass
+        # Official non-jackpot prizes for a plain ticket (no Power Play; for
+        # Mega Millions since 2025, the 2x minimum every ticket gets).
+        prizes = {}
+        for col in TIER_COLUMNS.values():
+            try:
+                prizes[col] = int(float(row.get(f"{col}_prize") or ""))
+            except ValueError:
+                pass  # blank, or "Jackpot"
+        if prizes:
+            rec["prizes"] = prizes
         try:
             whites = [int(x) for x in (row.get("white_balls") or "").split()]
             if len(whites) == 5 and row.get("bonus_ball"):
@@ -119,7 +129,7 @@ def reconcile(game_key: str, draws: List[Dict], lw: Dict[str, Dict]) -> List[Dic
     fallback = []
     for d, rec in lw.items():
         row = by_date.get(d)
-        extra = {k: v for k, v in rec.items() if k in ("jackpot", "cash_value", "jackpot_usd")}
+        extra = {k: v for k, v in rec.items() if k in ("jackpot", "cash_value", "jackpot_usd", "prizes")}
         if row is None:
             if "numbers" in rec:
                 fallback.append({"date": d, "numbers": rec["numbers"], "bonus": rec["bonus"],

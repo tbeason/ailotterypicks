@@ -84,7 +84,16 @@ cd site && python -m http.server            # open http://localhost:8000
 
 ## Scoring
 
-Each pick is scored as one ticket at the current price: $2 for Powerball; $5 for Mega Millions
-since April 2025, with the multiplier built in. Scores use base prize tables
-(`lottery/games.py`). Powerball Power Play is ignored. A jackpot is counted at the advertised
-annuity. The site also shows the exact expectations for a uniformly random ticket.
+Each pick is scored as one ticket: $2 for Powerball, and $5 for Mega Millions since April 2025.
+Prizes are the **official per-drawing amounts** from the
+[lotterywinners](https://github.com/tbeason/lotterywinners) CSV `_prize` columns:
+
+- Powerball: base prizes, without Power Play.
+- Mega Millions since April 2025: every ticket gets its own random 2x-10x multiplier, so picks
+  are scored at the guaranteed **2x minimum**, as megamillions.com lists them. Before that,
+  base prizes without the optional Megaplier.
+
+If a drawing has no CSV prizes, the tables in `lottery/games.py` are used instead. Those tables
+match the CSV for every drawing since 2015 (Powerball) and 2017 (Mega Millions). Each score
+records `prize_source` (`official` or `table`). A jackpot counts at the advertised annuity
+(`jackpot_usd`). The site also shows the exact expectations for a uniformly random ticket.

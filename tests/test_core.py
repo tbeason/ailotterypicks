@@ -8,7 +8,7 @@ import pytest
 
 import lottery.__main__ as cli
 from lottery import results
-from lottery.games import GAMES, MEGA_MILLIONS, POWERBALL
+from lottery.games import GAMES, MEGA_MILLIONS, POWERBALL, TIER_COLUMNS
 from lottery.budget import Budget, BudgetError
 from lottery.http import redact
 from lottery.pickers import ALLOWED_PARAMS, PickError, extract_json, pick_hot, pick_openrouter, pick_random, validate_pick
@@ -318,13 +318,33 @@ def test_score_tiers():
     assert s["prize"] == 0
 
 
-def test_score_megamillions_multiplier_and_jackpot():
+def test_score_megamillions_uses_official_prizes_then_2x_table():
     draw = {"date": "2026-09-22", "numbers": [1, 2, 3, 4, 5], "bonus": 10,
-            "multiplier": 3, "jackpot": "$410 Million"}
-    s = score_pick("megamillions", {"numbers": [1, 2, 30, 40, 50], "bonus": 10}, draw)
-    assert s["prize"] == 30 and s["cost"] == 5
+            "multiplier": 3, "jackpot": "$410 Million", "jackpot_usd": 410_000_000}
+    pick = {"numbers": [1, 2, 30, 40, 50], "bonus": 10}  # 2 + Mega Ball
+    # no official prizes stored: 2x-minimum table, and never the NY multiplier
+    s = score_pick("megamillions", pick, draw)
+    assert (s["prize"], s["prize_source"], s["cost"]) == (20, "table", 5)
+    # official per-drawing prize wins when present
+    s = score_pick("megamillions", pick, {**draw, "prizes": {"match_2_bonus": 25}})
+    assert (s["prize"], s["prize_source"]) == (25, "official")
     s = score_pick("megamillions", {"numbers": [1, 2, 3, 4, 5], "bonus": 10}, draw)
     assert s["jackpot"] and s["prize"] == 410_000_000
+    # non-winning tier
+    s = score_pick("megamillions", {"numbers": [1, 2, 30, 40, 50], "bonus": 11}, draw)
+    assert s["prize"] == 0
+
+
+def test_mm_table_matches_csv_minimums():
+    """The 2025+ table must equal what megamillions.com shows (CSV _prize columns)."""
+    csv_text = (
+        "lottery,date,white_balls,bonus_ball,multiplier,jackpot,cash_value,jackpot_usd,cash_value_usd,"
+        + ",".join(f"{c}_prize" for c in TIER_COLUMNS.values()) + "\n"
+        "megamillions,2026-09-22,07 13 26 37 68,8,,261 Million,110.5 Million,261000000,110500000,"
+        "Jackpot,2000000,20000,1000,400,20,20,14,10\n")
+    rec = results.parse_lotterywinners_csv(csv_text)["2026-09-22"]
+    era = MEGA_MILLIONS.era_for(date(2026, 9, 22))
+    assert rec["prizes"] == {col: era.prizes[t] for t, col in TIER_COLUMNS.items() if t != (5, True)}
 
 
 def test_parse_money():
