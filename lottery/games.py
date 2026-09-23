@@ -1,0 +1,100 @@
+"""Game rules, drawing schedules, and prize tables.
+
+Prize tables are the *base* (non-jackpot) prizes. Verify against the official
+sites if the games change their rules again.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from datetime import date, timedelta
+from typing import Dict, List, Optional, Tuple
+
+
+@dataclass(frozen=True)
+class Era:
+    """A period during which a game's rules were stable."""
+    start: date
+    white_max: int
+    bonus_max: int
+    ticket_price: int
+    draw_weekdays: Tuple[int, ...]  # Monday=0
+    # (white_matches, bonus_matched) -> prize in dollars. The jackpot is keyed
+    # (5, True) with value None because it is parimutuel/variable.
+    prizes: Dict[Tuple[int, bool], Optional[int]] = field(default_factory=dict)
+    # True when every ticket includes the multiplier (Mega Millions since 2025).
+    built_in_multiplier: bool = False
+
+
+@dataclass(frozen=True)
+class Game:
+    key: str
+    name: str
+    bonus_name: str
+    white_count: int
+    eras: Tuple[Era, ...]  # sorted oldest -> newest
+
+    def era_for(self, d: date) -> Era:
+        chosen = None
+        for era in self.eras:
+            if d >= era.start:
+                chosen = era
+        if chosen is None:
+            raise ValueError(f"{self.name} has no rules defined for {d}")
+        return chosen
+
+    def is_draw_day(self, d: date) -> bool:
+        return d.weekday() in self.era_for(d).draw_weekdays
+
+    def next_draw_on_or_after(self, d: date) -> date:
+        while not self.is_draw_day(d):
+            d += timedelta(days=1)
+        return d
+
+    def draw_dates(self, start: date, end: date) -> List[date]:
+        out, d = [], start
+        while d <= end:
+            if self.is_draw_day(d):
+                out.append(d)
+            d += timedelta(days=1)
+        return out
+
+
+_PB_PRIZES = {
+    (5, True): None, (5, False): 1_000_000, (4, True): 50_000, (4, False): 100,
+    (3, True): 100, (3, False): 7, (2, True): 7, (1, True): 4, (0, True): 4,
+}
+
+POWERBALL = Game(
+    key="powerball",
+    name="Powerball",
+    bonus_name="Powerball",
+    white_count=5,
+    eras=(
+        Era(date(2015, 10, 7), 69, 26, 2, (2, 5), _PB_PRIZES),
+        # Monday drawings added 2021-08-23.
+        Era(date(2021, 8, 23), 69, 26, 2, (0, 2, 5), _PB_PRIZES),
+    ),
+)
+
+MEGA_MILLIONS = Game(
+    key="megamillions",
+    name="Mega Millions",
+    bonus_name="Mega Ball",
+    white_count=5,
+    eras=(
+        Era(date(2017, 10, 31), 70, 25, 2, (1, 4), {
+            (5, True): None, (5, False): 1_000_000, (4, True): 10_000,
+            (4, False): 500, (3, True): 200, (3, False): 10, (2, True): 10,
+            (1, True): 4, (0, True): 2,
+        }),
+        # April 2025 redesign: $5 ticket, Mega Ball 1-24, built-in multiplier.
+        # These are base prizes before the multiplier.
+        Era(date(2025, 4, 8), 70, 24, 5, (1, 4), {
+            (5, True): None, (5, False): 1_000_000, (4, True): 10_000,
+            (4, False): 500, (3, True): 200, (3, False): 10, (2, True): 10,
+            (1, True): 7, (0, True): 5,
+        }, built_in_multiplier=True),
+    ),
+)
+
+GAMES: Dict[str, Game] = {g.key: g for g in (POWERBALL, MEGA_MILLIONS)}

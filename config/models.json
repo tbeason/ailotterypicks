@@ -1,0 +1,13 @@
+{
+  "_comment": "OpenRouter model IDs change often. Run `python -m lottery check-models` (or the 'Check models' workflow) to verify every enabled ID exists before relying on it.",
+  "contestants": [
+    {"id": "claude-opus",  "label": "Claude Opus 5.5", "provider": "openrouter", "model": "anthropic/claude-opus-5.5", "enabled": true},
+    {"id": "gpt",          "label": "GPT-6",           "provider": "openrouter", "model": "openai/gpt-6",               "enabled": true},
+    {"id": "gemini",       "label": "Gemini",          "provider": "openrouter", "model": "google/gemini-3-pro",        "enabled": true},
+    {"id": "grok",         "label": "Grok",            "provider": "openrouter", "model": "x-ai/grok-4",                "enabled": true},
+    {"id": "deepseek",     "label": "DeepSeek",        "provider": "openrouter", "model": "deepseek/deepseek-chat",     "enabled": true},
+    {"id": "jev",          "label": "Jev (TypeSafe AI)", "provider": "jev",      "model": "jev",                        "enabled": false},
+    {"id": "random",       "label": "Random quick pick", "provider": "random",   "model": "baseline", "baseline": true, "enabled": true},
+    {"id": "hot",          "label": "Hot-numbers bot",   "provider": "hot",      "model": "baseline", "baseline": true, "enabled": true}
+  ]
+}

@@ -1,0 +1,79 @@
+{
+ "generated_at": "2026-09-23T16:06:13+00:00",
+ "leaderboard": [],
+ "draws": [],
+ "expected_random": {
+  "powerball": {
+   "white_matches": 0.36231884057971014,
+   "bonus_match": 0.038461538461538464,
+   "win_rate": 0.040213840499251925,
+   "return_per_dollar_ex_jackpot": 0.15993432583118428,
+   "jackpot_odds": 292201338
+  },
+  "megamillions": {
+   "white_matches": 0.35714285714285715,
+   "bonus_match": 0.041666666666666664,
+   "win_rate": 0.04333945247026898,
+   "return_per_dollar_ex_jackpot": 0.07456499403096342,
+   "jackpot_odds": 290472336
+  }
+ },
+ "contestants": [
+  {
+   "id": "claude-opus",
+   "label": "Claude Opus 5.5",
+   "model": "anthropic/claude-opus-5.5",
+   "enabled": true,
+   "baseline": null
+  },
+  {
+   "id": "gpt",
+   "label": "GPT-6",
+   "model": "openai/gpt-6",
+   "enabled": true,
+   "baseline": null
+  },
+  {
+   "id": "gemini",
+   "label": "Gemini",
+   "model": "google/gemini-3-pro",
+   "enabled": true,
+   "baseline": null
+  },
+  {
+   "id": "grok",
+   "label": "Grok",
+   "model": "x-ai/grok-4",
+   "enabled": true,
+   "baseline": null
+  },
+  {
+   "id": "deepseek",
+   "label": "DeepSeek",
+   "model": "deepseek/deepseek-chat",
+   "enabled": true,
+   "baseline": null
+  },
+  {
+   "id": "jev",
+   "label": "Jev (TypeSafe AI)",
+   "model": "jev",
+   "enabled": false,
+   "baseline": null
+  },
+  {
+   "id": "random",
+   "label": "Random quick pick",
+   "model": "baseline",
+   "enabled": true,
+   "baseline": true
+  },
+  {
+   "id": "hot",
+   "label": "Hot-numbers bot",
+   "model": "baseline",
+   "enabled": true,
+   "baseline": true
+  }
+ ]
+}
