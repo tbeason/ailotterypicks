@@ -323,6 +323,29 @@ def test_expected_random_powerball():
     assert abs(e["win_rate"] - 1 / 24.87) < 0.001  # official overall odds 1 in 24.87
 
 
+# --- pick scheduling -----------------------------------------------------
+def at(y, m, d, hour):
+    return datetime(y, m, d, hour, tzinfo=cli.ET)
+
+
+def test_next_pick_date_picks_ahead_once_previous_results_are_in():
+    hist = [{"date": "2026-09-22"}]  # Tue MM drawing has results
+    # Wed morning: next MM drawing is Fri 9/25 and Tue's results are in -> pick now
+    assert cli.next_pick_date("megamillions", at(2026, 9, 23, 11), hist) == date(2026, 9, 25)
+    # without Tue's results, wait
+    assert cli.next_pick_date("megamillions", at(2026, 9, 23, 11), []) is None
+
+
+def test_next_pick_date_draw_day_and_cutoff():
+    # Wed is a Powerball day: pick even if Monday's results are missing
+    assert cli.next_pick_date("powerball", at(2026, 9, 23, 11), []) == date(2026, 9, 23)
+    # after the cutoff, today's drawing is off-limits; next is Sat 9/26,
+    # which needs Wed's results first
+    assert cli.next_pick_date("powerball", at(2026, 9, 23, 22), []) is None
+    assert cli.next_pick_date("powerball", at(2026, 9, 23, 22),
+                              [{"date": "2026-09-23"}]) == date(2026, 9, 26)
+
+
 # --- end to end ----------------------------------------------------------
 def test_pick_score_build(tmp_path, monkeypatch):
     monkeypatch.setattr(cli, "PICKS_DIR", tmp_path / "picks")

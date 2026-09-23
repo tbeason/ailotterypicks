@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 from zoneinfo import ZoneInfo
@@ -107,15 +107,48 @@ def run_picks(game_key: str, d: date, only: Optional[str] = None, force: bool = 
     return rec
 
 
+def next_pick_date(game_key: str, now: datetime, history: List[Dict]) -> Optional[date]:
+    """The drawing to pick for right now, or None if we should wait.
+
+    Picks happen as soon as the previous drawing's results are stored, so the
+    site always shows the next pick for every game. The prompt only uses past
+    results, so picking early sees exactly what a same-day pick would. On the
+    drawing day itself we pick regardless (before the cutoff) rather than skip.
+    """
+    game = GAMES[game_key]
+    today = now.date()
+    start = today if now.hour < PICK_CUTOFF_HOUR_ET else today + timedelta(days=1)
+    target = game.next_draw_on_or_after(start)
+    prev = target - timedelta(days=1)
+    while not game.is_draw_day(prev):
+        prev -= timedelta(days=1)
+    if any(h["date"] == prev.isoformat() for h in history) or target == today:
+        return target
+    return None
+
+
 def cmd_pick(args) -> None:
     now = now_et()
-    d = date.fromisoformat(args.date) if args.date else now.date()
-    if not args.date and now.hour >= PICK_CUTOFF_HOUR_ET:
-        print(f"Past {PICK_CUTOFF_HOUR_ET}:00 ET; too close to the drawing. Skipping.")
-        return
-    games = [g for g, game in GAMES.items()
-             if (not args.game or g == args.game) and game.is_draw_day(d)]
-    if not games:
+    targets = []
+    for g, game in GAMES.items():
+        if args.game and g != args.game:
+            continue
+        if args.date:
+            d = date.fromisoformat(args.date)
+            if game.is_draw_day(d):
+                targets.append((g, d))
+            continue
+        d = next_pick_date(g, now, results.load_draws(g))
+        if d is None:
+            print(f"{game.name}: waiting for the previous drawing's results")
+            continue
+        existing = load_json(picks_path(g, d.isoformat()))
+        enabled = {c["id"] for c in load_contestants()}
+        if (existing and not args.force and not args.only
+                and all("numbers" in existing["picks"].get(cid, {}) for cid in enabled)):
+            continue  # already complete; no API calls
+        targets.append((g, d))
+    if not targets:
         return
     budget = None
     if any(c["provider"] == "openrouter" for c in load_contestants()):
@@ -125,7 +158,7 @@ def cmd_pick(args) -> None:
                   f"${budget.limits['monthly_limit_usd']:.2f}")
         except (HttpError, BudgetError) as e:
             print(f"[warn] no budget ({e}); LLM contestants will be skipped")
-    for g in games:
+    for g, d in targets:
         print(f"{GAMES[g].name} {d}:")
         run_picks(g, d, only=args.only, force=args.force, budget=budget)
     if budget:
