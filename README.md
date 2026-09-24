@@ -8,7 +8,8 @@ baseline except by luck. The leaderboard is a noise generator. The rationales ar
 
 ## How it works
 
-1. **Every day** (`.github/workflows/daily.yml`, 15:00 and 20:00 UTC):
+1. **Every 3 hours** (`.github/workflows/daily.yml`; GitHub's scheduler can run late, so runs are
+   frequent and idempotent):
    1. Fetch new winning numbers from [data.ny.gov](https://data.ny.gov) (Powerball `d6yy-54nr`,
       Mega Millions `5xaw-6ayf`). Attach jackpot sizes from
       [tbeason/lotterywinners](https://github.com/tbeason/lotterywinners).
