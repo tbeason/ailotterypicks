@@ -1,0 +1,143 @@
+{
+ "game": "powerball",
+ "date": "2026-09-26",
+ "prompt_version": 3,
+ "prompt": {
+  "system": "Fun public experiment: AI models pick lottery numbers before real drawings; picks are scored on a leaderboard. Use any strategy. Reply with JSON only.",
+  "user": "Powerball, drawing 2026-09-26.\nPick 5 distinct numbers 1-69 and 1 Powerball 1-26.\nLast 10 drawings (newest first, Powerball after |):\n2026-09-23 5 15 26 29 30 | 14\n2026-09-21 2 7 9 17 58 | 20\n2026-09-19 18 30 41 45 68 | 10\n2026-09-16 2 21 24 25 64 | 7\n2026-09-14 19 20 57 61 67 | 22\n2026-09-12 14 16 23 58 69 | 3\n2026-09-09 9 40 42 55 65 | 23\n2026-09-07 15 19 28 39 56 | 3\n2026-09-05 15 40 47 53 59 | 9\n2026-09-02 3 10 29 58 64 | 14\nLast 100 drawings: most frequent 64 58 30 3 17 36 42 56; least frequent 1 34 39 22 23 32 33 35; Powerball most frequent 3 1 2 6 14 20 5 10; longest absent 51 1 52 34 43 44 22 46\nJSON: {\"numbers\":[5 ints],\"bonus\":int,\"strategy\":\"<=6 words\",\"rationale\":\"<=30 words\",\"confidence\":0-100}"
+ },
+ "picks": {
+  "claude-opus": {
+   "label": "Claude Opus 5.5",
+   "model": "anthropic/claude-opus-5.5",
+   "picked_at": "2026-09-24T18:14:35+00:00",
+   "numbers": [
+    8,
+    31,
+    44,
+    51,
+    62
+   ],
+   "bonus": 18,
+   "strategy": "Random spread, avoid popular patterns",
+   "rationale": "Drawings are independent, so past frequency has no predictive value. Numbers above 31 and a random-looking spread reduce the chance of splitting a jackpot.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.004172,
+   "raw_reply": "{\"numbers\":[8,31,44,51,62],\"bonus\":18,\"strategy\":\"Random spread, avoid popular patterns\",\"rationale\":\"Drawings are independent, so past frequency has no predictive value. Numbers above 31 and a random-looking spread reduce the chance of splitting a jackpot.\",\"confidence\":1}"
+  },
+  "gpt": {
+   "label": "GPT-6 Sol",
+   "model": "openai/gpt-6-sol",
+   "picked_at": "2026-09-24T18:14:39+00:00",
+   "numbers": [
+    11,
+    27,
+    38,
+    51,
+    63
+   ],
+   "bonus": 12,
+   "strategy": "Spread across the range",
+   "rationale": "Draws are independent; past frequencies do not predict the next result. This set spreads the picks across the range.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "openai/gpt-6-sol",
+   "cost_usd": 0.001376,
+   "raw_reply": "{\"numbers\":[11,27,38,51,63],\"bonus\":12,\"strategy\":\"Spread across the range\",\"rationale\":\"Draws are independent; past frequencies do not predict the next result. This set spreads the picks across the range.\",\"confidence\":1}"
+  },
+  "gemini": {
+   "label": "Gemini 3.8 Flash",
+   "model": "google/gemini-3.8-flash",
+   "picked_at": "2026-09-24T18:14:42+00:00",
+   "numbers": [
+    1,
+    17,
+    34,
+    58,
+    64
+   ],
+   "bonus": 6,
+   "strategy": "Frequent anchors balanced with overdue",
+   "rationale": "Pairs historical top-frequency performers 17, 58, and 64 with overdue cold outliers 1 and 34, anchored by high-frequency Powerball 6.",
+   "confidence": 15,
+   "attempts": 1,
+   "served_model": "google/gemini-3.8-flash",
+   "cost_usd": 0.000695,
+   "raw_reply": "```json\n{\"numbers\":[1,17,34,58,64],\"bonus\":6,\"strategy\":\"Frequent anchors balanced with overdue\",\"rationale\":\"Pairs historical top-frequency performers 17, 58, and 64 with overdue cold outliers 1 and 34, anchored by high-frequency Powerball 6.\",\"confidence\":15}\n```"
+  },
+  "grok": {
+   "label": "Grok 4.7",
+   "model": "x-ai/grok-4.7",
+   "picked_at": "2026-09-24T18:14:43+00:00",
+   "numbers": [
+    36,
+    42,
+    43,
+    51,
+    56
+   ],
+   "bonus": 6,
+   "strategy": "Blend hot and overdue",
+   "rationale": "Mix frequent whites absent lately with long-absent whites; Powerball 6 is frequent but missing from the last ten draws. Draws are random.",
+   "confidence": 8,
+   "attempts": 1,
+   "served_model": "x-ai/grok-4.7",
+   "cost_usd": 0.005134,
+   "raw_reply": "{\"numbers\":[36,42,43,51,56],\"bonus\":6,\"strategy\":\"Blend hot and overdue\",\"rationale\":\"Mix frequent whites absent lately with long-absent whites; Powerball 6 is frequent but missing from the last ten draws. Draws are random.\",\"confidence\":8}"
+  },
+  "deepseek": {
+   "label": "DeepSeek",
+   "model": "deepseek/deepseek-chat",
+   "picked_at": "2026-09-24T18:14:54+00:00",
+   "numbers": [
+    3,
+    17,
+    30,
+    58,
+    64
+   ],
+   "bonus": 14,
+   "strategy": "Frequency and recency",
+   "rationale": "Combined most frequent numbers and recent draws numbers",
+   "confidence": 65,
+   "attempts": 1,
+   "served_model": "deepseek/deepseek-chat",
+   "cost_usd": 0.000173,
+   "raw_reply": "```json\n{\"numbers\":[3, 17, 30, 58, 64],\"bonus\":14,\"strategy\":\"Frequency and recency\",\"rationale\":\"Combined most frequent numbers and recent draws numbers\",\"confidence\":65}\n```"
+  },
+  "random": {
+   "label": "Random quick pick",
+   "model": "baseline",
+   "picked_at": "2026-09-24T18:14:57+00:00",
+   "numbers": [
+    4,
+    14,
+    28,
+    32,
+    69
+   ],
+   "bonus": 19,
+   "strategy": "Uniform random (quick pick)",
+   "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+   "confidence": null
+  },
+  "hot": {
+   "label": "Hot-numbers bot",
+   "model": "baseline",
+   "picked_at": "2026-09-24T18:14:57+00:00",
+   "numbers": [
+    3,
+    17,
+    30,
+    58,
+    64
+   ],
+   "bonus": 3,
+   "strategy": "Hottest numbers, last 100 draws",
+   "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+   "confidence": null
+  }
+ }
+}
