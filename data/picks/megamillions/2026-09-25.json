@@ -139,5 +139,75 @@
    "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
    "confidence": null
   }
+ },
+ "result": {
+  "numbers": [
+   25,
+   57,
+   58,
+   67,
+   68
+  ],
+  "bonus": 16,
+  "multiplier": null,
+  "jackpot": null
+ },
+ "scores": {
+  "claude-opus": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "gpt": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "gemini": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "grok": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "deepseek": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "random": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  },
+  "hot": {
+   "white_matches": 0,
+   "bonus_match": false,
+   "prize": 0,
+   "prize_source": "none",
+   "jackpot": false,
+   "cost": 5
+  }
  }
 }
