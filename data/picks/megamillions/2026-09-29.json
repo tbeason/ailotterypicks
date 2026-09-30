@@ -150,7 +150,7 @@
   ],
   "bonus": 23,
   "multiplier": null,
-  "jackpot": null
+  "jackpot": "300 Million"
  },
  "scores": {
   "claude-opus": {
