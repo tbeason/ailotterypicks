@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-01T10:14:01+00:00",
+ "generated_at": "2026-10-02T00:50:05+00:00",
  "leaderboard": [
   {
    "id": "claude-opus",
@@ -528,7 +528,7 @@
     ],
     "bonus": 13,
     "multiplier": 4,
-    "jackpot": null
+    "jackpot": "411 Million"
    },
    "scores": {
     "claude-opus": {
