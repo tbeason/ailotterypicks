@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-04T12:27:30+00:00",
+ "generated_at": "2026-10-04T18:39:29+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -528,7 +528,7 @@
     ],
     "bonus": 14,
     "multiplier": 2,
-    "jackpot": null
+    "jackpot": "444 Million"
    },
    "scores": {
     "claude-opus": {
@@ -567,7 +567,7 @@
      "white_matches": 0,
      "bonus_match": true,
      "prize": 4,
-     "prize_source": "table",
+     "prize_source": "official",
      "jackpot": false,
      "cost": 2
     },
