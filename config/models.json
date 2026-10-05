@@ -12,7 +12,7 @@
     {"id": "gpt",          "label": "GPT-6 Sol",       "provider": "openrouter", "model": "openai/gpt-6-sol",               "enabled": true, "params": {"reasoning": {"effort": "low", "exclude": true}}},
     {"id": "gemini",       "label": "Gemini 3.8 Flash", "provider": "openrouter", "model": "google/gemini-3.8-flash",        "enabled": true, "params": {"reasoning": {"effort": "low", "exclude": true}}},
     {"id": "grok",         "label": "Grok 4.7",        "provider": "openrouter", "model": "x-ai/grok-4.7",                "enabled": true},
-    {"id": "deepseek",     "label": "DeepSeek",        "provider": "openrouter", "model": "deepseek/deepseek-chat",     "enabled": true},
+    {"id": "deepseek",     "label": "DeepSeek V4.1 Flash",        "provider": "openrouter", "model": "deepseek/deepseek-v4.1-flash",     "enabled": true},
     {"id": "jev",          "label": "Jev (TypeSafe AI)", "provider": "jev",      "model": "jev",                        "enabled": false},
     {"id": "random",       "label": "Random quick pick", "provider": "random",   "model": "baseline", "baseline": true, "enabled": true},
     {"id": "hot",          "label": "Hot-numbers bot",   "provider": "hot",      "model": "baseline", "baseline": true, "enabled": true}
