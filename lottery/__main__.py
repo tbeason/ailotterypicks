@@ -194,6 +194,7 @@ def build_site_data() -> Dict:
             for cid, s in (rec.get("scores") or {}).items():
                 b = board.setdefault(cid, {
                     "id": cid, "label": contestants.get(cid, {}).get("label", cid),
+                    "family": contestants.get(cid, {}).get("family"),
                     "baseline": bool(contestants.get(cid, {}).get("baseline")),
                     "tickets": 0, "spent": 0, "won": 0, "wins": 0, "white_matches": 0,
                     "bonus_matches": 0, "best": None, "by_game": {}})
@@ -203,11 +204,17 @@ def build_site_data() -> Dict:
                 b["wins"] += s["prize"] > 0
                 b["white_matches"] += s["white_matches"]
                 b["bonus_matches"] += s["bonus_match"]
-                gb = b["by_game"].setdefault(g, {"tickets": 0, "spent": 0, "won": 0})
+                gb = b["by_game"].setdefault(g, {
+                    "tickets": 0, "spent": 0, "won": 0, "white_matches": 0,
+                    "bonus_matches": 0, "best": None})
                 gb["tickets"] += 1
                 gb["spent"] += s["cost"]
                 gb["won"] += s["prize"]
+                gb["white_matches"] += s["white_matches"]
+                gb["bonus_matches"] += s["bonus_match"]
                 tier = (s["white_matches"], s["bonus_match"])
+                if gb["best"] is None or tier > tuple(gb["best"]):
+                    gb["best"] = list(tier)
                 if b["best"] is None or tier > tuple(b["best"]["tier"]):
                     b["best"] = {"tier": list(tier), "date": rec["date"], "game": g}
     for b in board.values():
@@ -221,7 +228,7 @@ def build_site_data() -> Dict:
         "leaderboard": sorted(board.values(), key=lambda b: -b["net"]),
         "draws": sorted(draws_out, key=lambda r: (r["date"], r["game"]), reverse=True),
         "expected_random": {g: expected_random(g, today) for g in GAMES},
-        "contestants": [{k: c.get(k) for k in ("id", "label", "model", "enabled", "baseline")}
+        "contestants": [{k: c.get(k) for k in ("id", "label", "family", "model", "enabled", "baseline")}
                         for c in contestants.values()],
     }
 
