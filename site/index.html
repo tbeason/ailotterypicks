@@ -5,53 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI Lottery Picks</title>
 <meta name="description" content="AI models pick Powerball and Mega Millions numbers before every drawing. A random quick pick keeps them honest.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="wrap">
-  <h1>AI Lottery Picks</h1>
-  <p class="lede">Before every Powerball and Mega Millions drawing, each model gets the same prompt
-    with recent results and picks one ticket. The picks are committed to git before the drawing and
-    scored after it.</p>
-  <p class="honest"><strong>The honest part:</strong> lottery drawings are independent and uniformly random, so
-    no model can beat the <em>Random quick pick</em> baseline except by luck. Any gap on the leaderboard
-    is noise. What's worth reading is how each model <em>reasons</em> about a game that can't be reasoned about.</p>
+<nav class="nav">
+  <span class="brand">AI Lottery Picks</span>
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#upcoming">Upcoming</a>
+  <a href="#results">Latest results</a>
+  <a href="#sources">Sources</a>
+</nav>
+
+<header class="wrap intro">
+  <div class="kicker">Powerball · Mega Millions · every drawing</div>
+  <h1>Five models.<br>One prompt.<br>Pure chance.</h1>
+  <p class="lede">Before every drawing, each model gets the same prompt and picks one ticket, committed to git before the draw. No superintelligence required, only luck.</p>
 </header>
 
 <main class="wrap">
-  <section>
-    <h2>Leaderboard</h2>
-    <div class="scroll"><table id="board"></table></div>
-    <p class="note" id="expect"></p>
+  <section id="leaderboard" class="sec sec-first">
+    <div class="sec-head sec-head-center">
+      <span class="idx">01</span>
+      <h2>Leaderboard</h2>
+      <span class="muted small" id="gen"></span>
+      <div class="seg" id="seg" role="group" aria-label="Filter by game">
+        <button type="button" class="seg-opt" data-game="all" aria-pressed="true">All games</button>
+        <button type="button" class="seg-opt" data-game="powerball" aria-pressed="false">Powerball</button>
+        <button type="button" class="seg-opt" data-game="megamillions" aria-pressed="false">Mega Millions</button>
+      </div>
+    </div>
+    <div class="board-wide scroll"><table id="board" class="table"></table></div>
+    <div class="board-narrow" id="board-narrow"></div>
+    <div class="expect">
+      <h6 class="muted">What pure chance predicts per ticket</h6>
+      <div class="panels" id="expect"></div>
+      <p class="muted note">A model beating these by a little over a few dozen tickets is luck, not skill. Base-prize return excludes the jackpot.</p>
+    </div>
   </section>
 
-  <section id="upcoming-sec">
-    <h2>Upcoming drawings</h2>
-    <div id="upcoming" class="cards"></div>
+  <section id="upcoming" class="sec" hidden>
+    <div class="sec-head"><span class="idx">02</span><h2>Upcoming drawings</h2></div>
+    <div class="cols" id="upcoming-cols"></div>
   </section>
 
-  <section>
-    <h2>Past drawings</h2>
-    <div id="past" class="cards"></div>
-    <button id="more" class="more" hidden>Show more</button>
+  <section id="results" class="sec">
+    <div class="sec-head">
+      <span class="idx">03</span><h2>Latest results</h2>
+      <a class="push small" href="https://github.com/tbeason/ailotterypicks" rel="noopener noreferrer">Full pick history on GitHub</a>
+    </div>
+    <div class="cols" id="results-cols"></div>
   </section>
 </main>
 
-<footer class="wrap">
-  <p><strong>Official results:</strong>
-    <a href="https://www.powerball.com" rel="noopener noreferrer">Powerball</a> ·
-    <a href="https://www.megamillions.com" rel="noopener noreferrer">Mega Millions</a>.
-    Always check official sources; this site may contain errors.</p>
-  <p>Winning numbers from <a href="https://data.ny.gov">data.ny.gov</a>, cross-checked against
-    <a href="https://github.com/tbeason/lotterywinners">tbeason/lotterywinners</a> (scraped from the official sites).
-    Code and full pick history: <a href="https://github.com/tbeason/ailotterypicks">tbeason/ailotterypicks</a>.
-    Prizes are the official amounts for a plain ticket: Powerball without Power Play; Mega Millions at the
-    guaranteed 2x minimum (every ticket gets a random 2x-10x multiplier). Jackpots at the advertised annuity.
-    Not affiliated with any lottery. Please don't bet money on AI picks.
-    <span id="gen"></span></p>
+<footer id="sources" class="wrap foot">
+  <div class="foot-grid">
+    <div>
+      <h6>Official results</h6>
+      <p><a href="https://www.powerball.com" rel="noopener noreferrer">Powerball</a> ·
+        <a href="https://www.megamillions.com" rel="noopener noreferrer">Mega Millions</a>.
+        Always check official sources; this site may contain errors.</p>
+    </div>
+    <div>
+      <h6>Data &amp; code</h6>
+      <p>Winning numbers from <a href="https://data.ny.gov" rel="noopener noreferrer">data.ny.gov</a>, cross-checked against
+        <a href="https://github.com/tbeason/lotterywinners" rel="noopener noreferrer">tbeason/lotterywinners</a> (scraped from the official sites).
+        Code and full pick history: <a href="https://github.com/tbeason/ailotterypicks" rel="noopener noreferrer">tbeason/ailotterypicks</a>.</p>
+    </div>
+    <div>
+      <h6>Scoring</h6>
+      <p>Prizes are the official amounts for a plain ticket: Powerball without Power Play; Mega Millions at the
+        guaranteed 2x minimum (every ticket gets a random 2x-10x multiplier). Jackpots at the advertised annuity.</p>
+    </div>
+  </div>
+  <p class="muted tiny foot-line">Not affiliated with any lottery. Please don't bet money on AI picks. <span id="gen2"></span></p>
 </footer>
 <script src="app.js"></script>
 </body>
