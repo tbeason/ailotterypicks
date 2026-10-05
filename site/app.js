@@ -10,6 +10,7 @@
     data = await (await fetch("data.json", { cache: "no-cache" })).json();
   } catch (e) {
     $("#board").innerHTML = "<tbody><tr><td>No data yet.</td></tr></tbody>";
+    $("#board-narrow").innerHTML = `<p class="board-empty muted">No data yet.</p>`;
     return;
   }
   let game = "all";
