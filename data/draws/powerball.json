@@ -38203,5 +38203,32 @@
    "match_0_bonus": 4
   },
   "verified": true
+ },
+ {
+  "date": "2026-10-05",
+  "numbers": [
+   16,
+   23,
+   32,
+   36,
+   54
+  ],
+  "bonus": 9,
+  "multiplier": 2,
+  "source": "data.ny.gov",
+  "jackpot": "463 Million",
+  "cash_value": "190.9 Million",
+  "jackpot_usd": 463000000,
+  "prizes": {
+   "match_5": 1000000,
+   "match_4_bonus": 50000,
+   "match_4": 100,
+   "match_3_bonus": 100,
+   "match_3": 7,
+   "match_2_bonus": 7,
+   "match_1_bonus": 4,
+   "match_0_bonus": 4
+  },
+  "verified": true
  }
 ]
