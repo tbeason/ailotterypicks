@@ -90,9 +90,9 @@
   "deepseek": {
    "label": "DeepSeek V4.1 Flash",
    "model": "deepseek/deepseek-v4.1-flash",
-   "picked_at": "2026-10-07T20:39:24+00:00",
+   "picked_at": "2026-10-08T01:02:46+00:00",
    "error": "failed after 2 attempts: no JSON object in reply",
-   "cost_usd": 0.000556
+   "cost_usd": 0.00022
   },
   "random": {
    "label": "Random quick pick",
