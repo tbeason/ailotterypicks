@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-12T10:58:21+00:00",
+ "generated_at": "2026-10-12T21:18:12+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -417,7 +417,7 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-12T10:58:17+00:00",
+     "picked_at": "2026-10-12T21:18:10+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
      "cost_usd": 0.000346
     },
@@ -542,7 +542,7 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-12T10:58:14+00:00",
+     "picked_at": "2026-10-12T21:18:06+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
      "cost_usd": 0.000261
     },
