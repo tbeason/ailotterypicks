@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-13T10:42:35+00:00",
+ "generated_at": "2026-10-13T19:20:01+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -417,9 +417,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-13T10:42:29+00:00",
+     "picked_at": "2026-10-13T19:19:55+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000389
+     "cost_usd": 0.000433
     },
     "random": {
      "label": "Random quick pick",
@@ -542,9 +542,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-13T10:42:32+00:00",
+     "picked_at": "2026-10-13T19:19:58+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000389
+     "cost_usd": 0.000387
     },
     "random": {
      "label": "Random quick pick",
