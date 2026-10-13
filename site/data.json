@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-12T21:18:12+00:00",
+ "generated_at": "2026-10-13T02:36:08+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -417,7 +417,7 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-12T21:18:10+00:00",
+     "picked_at": "2026-10-13T02:36:05+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
      "cost_usd": 0.000346
     },
@@ -595,7 +595,7 @@
     ],
     "bonus": 15,
     "multiplier": 2,
-    "jackpot": null
+    "jackpot": "519 Million"
    },
    "scores": {
     "claude-opus": {
