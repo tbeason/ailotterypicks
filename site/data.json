@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-13T19:20:01+00:00",
+ "generated_at": "2026-10-14T00:20:07+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -417,9 +417,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-13T19:19:55+00:00",
+     "picked_at": "2026-10-14T00:20:03+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000433
+     "cost_usd": 0.000387
     },
     "random": {
      "label": "Random quick pick",
@@ -542,9 +542,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-13T19:19:58+00:00",
+     "picked_at": "2026-10-14T00:20:06+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000387
+     "cost_usd": 0.000346
     },
     "random": {
      "label": "Random quick pick",
@@ -595,7 +595,7 @@
     ],
     "bonus": 9,
     "multiplier": 3,
-    "jackpot": null
+    "jackpot": "541 Million"
    },
    "scores": {
     "claude-opus": {
