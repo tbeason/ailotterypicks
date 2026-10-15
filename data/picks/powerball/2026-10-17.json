@@ -1,0 +1,130 @@
+{
+ "game": "powerball",
+ "date": "2026-10-17",
+ "prompt_version": 3,
+ "prompt": {
+  "system": "Fun public experiment: AI models pick lottery numbers before real drawings; picks are scored on a leaderboard. Use any strategy. Reply with JSON only.",
+  "user": "Powerball, drawing 2026-10-17.\nPick 5 distinct numbers 1-69 and 1 Powerball 1-26.\nLast 10 drawings (newest first, Powerball after |):\n2026-10-14 3 34 37 42 46 | 20\n2026-10-12 22 28 38 51 69 | 9\n2026-10-10 1 4 19 33 51 | 15\n2026-10-07 11 13 14 21 65 | 19\n2026-10-05 16 23 32 36 54 | 9\n2026-10-03 4 42 44 55 59 | 14\n2026-09-30 4 6 23 33 44 | 13\n2026-09-28 17 21 29 42 49 | 7\n2026-09-26 14 40 52 55 57 | 24\n2026-09-23 5 15 26 29 30 | 14\nLast 100 drawings: most frequent 42 64 3 14 17 65 30 59; least frequent 1 34 39 22 23 33 35 62; Powerball most frequent 3 14 20 2 13 1 10 12; longest absent 43 48 60 35 66 27 63 8\nJSON: {\"numbers\":[5 ints],\"bonus\":int,\"strategy\":\"<=6 words\",\"rationale\":\"<=30 words\",\"confidence\":0-100}"
+ },
+ "picks": {
+  "claude-opus": {
+   "label": "Claude Opus 5.5",
+   "model": "anthropic/claude-opus-5.5",
+   "picked_at": "2026-10-15T11:36:35+00:00",
+   "numbers": [
+    8,
+    27,
+    43,
+    60,
+    66
+   ],
+   "bonus": 11,
+   "strategy": "Random picks, avoiding popular patterns",
+   "rationale": "Every drawing is independent, so past frequencies predict nothing. Numbers above 31 avoid birthday-heavy choices and reduce jackpot-splitting risk. The odds of winning stay the same.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.004972,
+   "raw_reply": "{\"numbers\":[8,27,43,60,66],\"bonus\":11,\"strategy\":\"Random picks, avoiding popular patterns\",\"rationale\":\"Every drawing is independent, so past frequencies predict nothing. Numbers above 31 avoid birthday-heavy choices and reduce jackpot-splitting risk. The odds of winning stay the same.\",\"confidence\":1}"
+  },
+  "gpt": {
+   "label": "GPT-6 Sol",
+   "model": "openai/gpt-6-sol",
+   "picked_at": "2026-10-15T11:36:40+00:00",
+   "numbers": [
+    17,
+    30,
+    42,
+    59,
+    64
+   ],
+   "bonus": 14,
+   "strategy": "Frequent-number selection",
+   "rationale": "Selected from the most frequent numbers in the last 100 drawings. Past frequency does not improve the odds of a random draw.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "openai/gpt-6-sol",
+   "cost_usd": 0.001396,
+   "raw_reply": "{\"numbers\":[17,30,42,59,64],\"bonus\":14,\"strategy\":\"Frequent-number selection\",\"rationale\":\"Selected from the most frequent numbers in the last 100 drawings. Past frequency does not improve the odds of a random draw.\",\"confidence\":1}"
+  },
+  "gemini": {
+   "label": "Gemini 3.8 Flash",
+   "model": "google/gemini-3.8-flash",
+   "picked_at": "2026-10-15T11:36:41+00:00",
+   "numbers": [
+    14,
+    27,
+    35,
+    42,
+    64
+   ],
+   "bonus": 3,
+   "strategy": "Hybrid hot numbers and overdue sleepers",
+   "rationale": "Combines top historical performers 14, 42, and 64 with deeply overdue sleepers 27 and 35, paired with the overall most frequent Powerball 3.",
+   "confidence": 15,
+   "attempts": 1,
+   "served_model": "google/gemini-3.8-flash",
+   "cost_usd": 0.000708,
+   "raw_reply": "```json\n{\"numbers\":[14,27,35,42,64],\"bonus\":3,\"strategy\":\"Hybrid hot numbers and overdue sleepers\",\"rationale\":\"Combines top historical performers 14, 42, and 64 with deeply overdue sleepers 27 and 35, paired with the overall most frequent Powerball 3.\",\"confidence\":15}\n```"
+  },
+  "grok": {
+   "label": "Grok 4.7",
+   "model": "x-ai/grok-4.7",
+   "picked_at": "2026-10-15T11:36:44+00:00",
+   "numbers": [
+    8,
+    27,
+    43,
+    48,
+    60
+   ],
+   "bonus": 16,
+   "strategy": "Longest absent whites",
+   "rationale": "Chose five longest-absent white balls and a mid-range Powerball not in the recent most-frequent set.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "x-ai/grok-4.7",
+   "cost_usd": 0.002224,
+   "raw_reply": "{\"numbers\":[8,27,43,48,60],\"bonus\":16,\"strategy\":\"Longest absent whites\",\"rationale\":\"Chose five longest-absent white balls and a mid-range Powerball not in the recent most-frequent set.\",\"confidence\":1}"
+  },
+  "deepseek": {
+   "label": "DeepSeek V4.1 Flash",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "picked_at": "2026-10-15T11:36:46+00:00",
+   "error": "failed after 2 attempts: no JSON object in reply",
+   "cost_usd": 0.000316
+  },
+  "random": {
+   "label": "Random quick pick",
+   "model": "baseline",
+   "picked_at": "2026-10-15T11:36:50+00:00",
+   "numbers": [
+    17,
+    28,
+    41,
+    50,
+    61
+   ],
+   "bonus": 12,
+   "strategy": "Uniform random (quick pick)",
+   "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+   "confidence": null
+  },
+  "hot": {
+   "label": "Hot-numbers bot",
+   "model": "baseline",
+   "picked_at": "2026-10-15T11:36:50+00:00",
+   "numbers": [
+    3,
+    14,
+    17,
+    42,
+    64
+   ],
+   "bonus": 3,
+   "strategy": "Hottest numbers, last 100 draws",
+   "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+   "confidence": null
+  }
+ }
+}
