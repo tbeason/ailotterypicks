@@ -49,7 +49,7 @@
         won: x.won, net: x.won - x.spent, avg: (x.white_matches || 0) / x.tickets,
         bonus: (x.bonus_matches || 0) / x.tickets, best: x.best || null, chance: e[g].white_matches };
     }).filter(Boolean).sort((x, y) =>
-      (y.net - x.net) || (y.avg - x.avg) || family(x.id, x.label).localeCompare(family(y.id, y.label)));
+      (y.won - x.won) || (y.avg - x.avg) || family(x.id, x.label).localeCompare(family(y.id, y.label)));
   }
 
   const whoHtml = (b) => `<span class="who"><span class="fam">${esc(family(b.id, b.label))}</span>` +

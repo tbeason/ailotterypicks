@@ -225,7 +225,7 @@ def build_site_data() -> Dict:
     today = now_et().date()
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "leaderboard": sorted(board.values(), key=lambda b: -b["net"]),
+        "leaderboard": sorted(board.values(), key=lambda b: (-b["won"], -b["avg_white_matches"])),
         "draws": sorted(draws_out, key=lambda r: (r["date"], r["game"]), reverse=True),
         "expected_random": {g: expected_random(g, today) for g in GAMES},
         "contestants": [{k: c.get(k) for k in ("id", "label", "family", "model", "enabled", "baseline")}
