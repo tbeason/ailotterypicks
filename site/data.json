@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-16T16:43:48+00:00",
+ "generated_at": "2026-10-16T19:56:13+00:00",
  "leaderboard": [
   {
    "id": "deepseek",
@@ -417,9 +417,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-16T16:43:41+00:00",
+     "picked_at": "2026-10-16T19:56:06+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000347
+     "cost_usd": 0.000338
     },
     "random": {
      "label": "Random quick pick",
@@ -542,9 +542,9 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-16T16:43:45+00:00",
+     "picked_at": "2026-10-16T19:56:11+00:00",
      "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000471
+     "cost_usd": 0.000386
     },
     "random": {
      "label": "Random quick pick",
@@ -595,7 +595,7 @@
     ],
     "bonus": 20,
     "multiplier": 3,
-    "jackpot": null
+    "jackpot": "566 Million"
    },
    "scores": {
     "claude-opus": {
@@ -618,7 +618,7 @@
      "white_matches": 3,
      "bonus_match": false,
      "prize": 7,
-     "prize_source": "table",
+     "prize_source": "official",
      "jackpot": false,
      "cost": 2
     },
@@ -626,7 +626,7 @@
      "white_matches": 3,
      "bonus_match": false,
      "prize": 7,
-     "prize_source": "table",
+     "prize_source": "official",
      "jackpot": false,
      "cost": 2
     },

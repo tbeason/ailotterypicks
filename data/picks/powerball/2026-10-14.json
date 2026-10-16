@@ -137,7 +137,7 @@
   ],
   "bonus": 20,
   "multiplier": 3,
-  "jackpot": null
+  "jackpot": "566 Million"
  },
  "scores": {
   "claude-opus": {
@@ -160,7 +160,7 @@
    "white_matches": 3,
    "bonus_match": false,
    "prize": 7,
-   "prize_source": "table",
+   "prize_source": "official",
    "jackpot": false,
    "cost": 2
   },
@@ -168,7 +168,7 @@
    "white_matches": 3,
    "bonus_match": false,
    "prize": 7,
-   "prize_source": "table",
+   "prize_source": "official",
    "jackpot": false,
    "cost": 2
   },
