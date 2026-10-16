@@ -110,13 +110,14 @@ def pick_openrouter(model: Dict, game_key: str, draw_date: date, prompt: Dict,
         spent += cost
         try:
             reply = data["choices"][0]["message"].get("content") or ""
+            finish = data["choices"][0].get("finish_reason")
         except (KeyError, IndexError, TypeError):
             last_err = "malformed API response"
             continue
         try:
             pick = validate_pick(game_key, draw_date, extract_json(reply))
         except PickError as e:
-            last_err = str(e)
+            last_err = str(e) + (" (empty reply, finish_reason=%s)" % finish if not reply.strip() else "")
             messages += [{"role": "assistant", "content": reply[:1000]},
                          {"role": "user", "content": f"Invalid: {e}. Reply with only the corrected JSON."}]
             continue
