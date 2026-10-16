@@ -90,7 +90,7 @@
   "deepseek": {
    "label": "DeepSeek V4.1 Flash",
    "model": "deepseek/deepseek-v4.1-flash",
-   "picked_at": "2026-10-16T04:37:44+00:00",
+   "picked_at": "2026-10-16T11:30:26+00:00",
    "error": "failed after 2 attempts: no JSON object in reply",
    "cost_usd": 0.000356
   },
