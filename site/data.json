@@ -1,53 +1,6 @@
 {
- "generated_at": "2026-10-16T19:56:13+00:00",
+ "generated_at": "2026-10-16T21:15:59+00:00",
  "leaderboard": [
-  {
-   "id": "deepseek",
-   "label": "DeepSeek V4.1 Flash",
-   "family": "DeepSeek",
-   "baseline": false,
-   "tickets": 10,
-   "spent": 32,
-   "won": 4,
-   "wins": 1,
-   "white_matches": 2,
-   "bonus_matches": 1,
-   "best": {
-    "tier": [
-     1,
-     false
-    ],
-    "date": "2026-09-23",
-    "game": "powerball"
-   },
-   "by_game": {
-    "powerball": {
-     "tickets": 6,
-     "spent": 12,
-     "won": 4,
-     "white_matches": 2,
-     "bonus_matches": 1,
-     "best": [
-      1,
-      false
-     ]
-    },
-    "megamillions": {
-     "tickets": 4,
-     "spent": 20,
-     "won": 0,
-     "white_matches": 0,
-     "bonus_matches": 0,
-     "best": [
-      0,
-      false
-     ]
-    }
-   },
-   "net": -28,
-   "avg_white_matches": 0.2,
-   "bonus_rate": 0.1
-  },
   {
    "id": "gemini",
    "label": "Gemini 3.8 Flash",
@@ -188,6 +141,53 @@
    "net": -46,
    "avg_white_matches": 0.4375,
    "bonus_rate": 0.0625
+  },
+  {
+   "id": "deepseek",
+   "label": "DeepSeek V4.1 Flash",
+   "family": "DeepSeek",
+   "baseline": false,
+   "tickets": 10,
+   "spent": 32,
+   "won": 4,
+   "wins": 1,
+   "white_matches": 2,
+   "bonus_matches": 1,
+   "best": {
+    "tier": [
+     1,
+     false
+    ],
+    "date": "2026-09-23",
+    "game": "powerball"
+   },
+   "by_game": {
+    "powerball": {
+     "tickets": 6,
+     "spent": 12,
+     "won": 4,
+     "white_matches": 2,
+     "bonus_matches": 1,
+     "best": [
+      1,
+      false
+     ]
+    },
+    "megamillions": {
+     "tickets": 4,
+     "spent": 20,
+     "won": 0,
+     "white_matches": 0,
+     "bonus_matches": 0,
+     "best": [
+      0,
+      false
+     ]
+    }
+   },
+   "net": -28,
+   "avg_white_matches": 0.2,
+   "bonus_rate": 0.1
   },
   {
    "id": "claude-opus",
@@ -417,9 +417,21 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-16T19:56:06+00:00",
-     "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000338
+     "picked_at": "2026-10-16T21:15:57+00:00",
+     "numbers": [
+      17,
+      30,
+      42,
+      59,
+      64
+     ],
+     "bonus": 14,
+     "strategy": "Hot frequency plus mid-range balance",
+     "rationale": "Selected frequent numbers from 100-drawing history, avoiding recent repeats, with a common Powerball.",
+     "confidence": 18,
+     "attempts": 1,
+     "served_model": "deepseek/deepseek-v4.1-flash",
+     "cost_usd": 8.2e-05
     },
     "random": {
      "label": "Random quick pick",
@@ -542,9 +554,21 @@
     "deepseek": {
      "label": "DeepSeek V4.1 Flash",
      "model": "deepseek/deepseek-v4.1-flash",
-     "picked_at": "2026-10-16T19:56:11+00:00",
-     "error": "failed after 2 attempts: no JSON object in reply",
-     "cost_usd": 0.000386
+     "picked_at": "2026-10-16T21:15:58+00:00",
+     "numbers": [
+      11,
+      26,
+      30,
+      43,
+      63
+     ],
+     "bonus": 16,
+     "strategy": "Mix hot and overdue",
+     "rationale": "Selected frequent numbers 11,26,30,43,63 with Mega Ball 16, a top frequent choice balancing recent draw trends.",
+     "confidence": 18,
+     "attempts": 1,
+     "served_model": "deepseek/deepseek-v4.1-flash",
+     "cost_usd": 8.6e-05
     },
     "random": {
      "label": "Random quick pick",

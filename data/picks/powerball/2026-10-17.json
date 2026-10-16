@@ -90,9 +90,22 @@
   "deepseek": {
    "label": "DeepSeek V4.1 Flash",
    "model": "deepseek/deepseek-v4.1-flash",
-   "picked_at": "2026-10-16T19:56:06+00:00",
-   "error": "failed after 2 attempts: no JSON object in reply",
-   "cost_usd": 0.000338
+   "picked_at": "2026-10-16T21:15:57+00:00",
+   "numbers": [
+    17,
+    30,
+    42,
+    59,
+    64
+   ],
+   "bonus": 14,
+   "strategy": "Hot frequency plus mid-range balance",
+   "rationale": "Selected frequent numbers from 100-drawing history, avoiding recent repeats, with a common Powerball.",
+   "confidence": 18,
+   "attempts": 1,
+   "served_model": "deepseek/deepseek-v4.1-flash",
+   "cost_usd": 8.2e-05,
+   "raw_reply": "{\"numbers\":[17,30,42,59,64],\"bonus\":14,\"strategy\":\"Hot frequency plus mid-range balance\",\"rationale\":\"Selected frequent numbers from 100-drawing history, avoiding recent repeats, with a common Powerball.\",\"confidence\":18}"
   },
   "random": {
    "label": "Random quick pick",

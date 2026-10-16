@@ -90,9 +90,22 @@
   "deepseek": {
    "label": "DeepSeek V4.1 Flash",
    "model": "deepseek/deepseek-v4.1-flash",
-   "picked_at": "2026-10-16T19:56:11+00:00",
-   "error": "failed after 2 attempts: no JSON object in reply",
-   "cost_usd": 0.000386
+   "picked_at": "2026-10-16T21:15:58+00:00",
+   "numbers": [
+    11,
+    26,
+    30,
+    43,
+    63
+   ],
+   "bonus": 16,
+   "strategy": "Mix hot and overdue",
+   "rationale": "Selected frequent numbers 11,26,30,43,63 with Mega Ball 16, a top frequent choice balancing recent draw trends.",
+   "confidence": 18,
+   "attempts": 1,
+   "served_model": "deepseek/deepseek-v4.1-flash",
+   "cost_usd": 8.6e-05,
+   "raw_reply": "{\"numbers\":[11,26,30,43,63],\"bonus\":16,\"strategy\":\"Mix hot and overdue\",\"rationale\":\"Selected frequent numbers 11,26,30,43,63 with Mega Ball 16, a top frequent choice balancing recent draw trends.\",\"confidence\":18}"
   },
   "random": {
    "label": "Random quick pick",
