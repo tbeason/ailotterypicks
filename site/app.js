@@ -106,6 +106,52 @@
       b.setAttribute("aria-pressed", String(b.dataset.game === game)));
   }
 
+
+  // Correlation between contestants' white-ball picks. Each ticket becomes a 0/1 vector over
+  // (drawing, ball number); the Pearson correlation of two such vectors is the phi coefficient.
+  // Only drawings where both contestants have a valid pick count. Bonus balls are ignored.
+  const WHITE_MAX = { powerball: 69, megamillions: 70 };
+  function corrMatrix(g) {
+    const ids = data.leaderboard.map((b) => b.id);
+    const draws = data.draws.filter((d) => g === "all" || d.game === g);
+    const pick = (d, id) => { const p = d.picks[id]; return p && p.numbers ? new Set(p.numbers) : null; };
+    const present = ids.filter((id) => draws.some((d) => pick(d, id)));
+    const cell = {};
+    for (const a of present) for (const b of present) {
+      if (a >= b) continue;
+      let n = 0, N = 0, both = 0, sa = 0, sb = 0;
+      for (const d of draws) {
+        const pa = pick(d, a), pb = pick(d, b);
+        if (!pa || !pb) continue;
+        n++; N += WHITE_MAX[d.game]; sa += pa.size; sb += pb.size;
+        for (const x of pa) if (pb.has(x)) both++;
+      }
+      const den = Math.sqrt(sa * (N - sa) * sb * (N - sb));
+      cell[a + "|" + b] = { n, shared: both, r: n && den ? (both * N - sa * sb) / den : null };
+    }
+    return { ids: present, cell };
+  }
+
+  function renderCorr() {
+    const { ids, cell } = corrMatrix(game);
+    const el = $("#corr");
+    if (ids.length < 2) { el.innerHTML = `<tbody><tr><td>Not enough picks yet.</td></tr></tbody>`; return; }
+    const get = (a, b) => cell[(a < b ? a : b) + "|" + (a < b ? b : a)];
+    const short = (id) => esc(family(id, contestants[id]?.label || id));
+    el.innerHTML = `<thead><tr><th></th>${ids.map((id) => `<th class="r">${short(id)}</th>`).join("")}</tr></thead><tbody>` +
+      ids.map((a) => `<tr><th scope="row" class="corr-row">${short(a)}</th>` + ids.map((b) => {
+        if (a === b) return `<td class="r corr-self">1</td>`;
+        const c = get(a, b);
+        if (!c || c.r == null) return `<td class="r muted">–</td>`;
+        const alpha = Math.min(60, Math.round(Math.abs(c.r) / 0.4 * 60));
+        return `<td class="r corr-c" data-a="${alpha}" data-neg="${c.r < 0 ? 1 : 0}" ` +
+          `title="${c.n} drawings, ${c.shared} balls in common">${c.r.toFixed(2)}</td>`;
+      }).join("") + "</tr>").join("") + "</tbody>";
+    el.querySelectorAll(".corr-c").forEach((td) => {
+      td.style.background = `color-mix(in srgb, var(${td.dataset.neg === "1" ? "--color-text" : "--color-accent"}) ${td.dataset.a}%, transparent)`;
+    });
+  }
+
   const cell = (n, cls) => `<span class="n ${cls}">${n}</span>`;
   function pickCells(nums, bonus, result) {
     const hit = new Set(result ? result.numbers : []);
@@ -159,11 +205,11 @@
 
   $("#seg").addEventListener("click", (ev) => {
     const b = ev.target.closest(".seg-opt");
-    if (b) { game = b.dataset.game; renderBoard(); }
+    if (b) { game = b.dataset.game; renderBoard(); renderCorr(); }
   });
   const gen = new Date(data.generated_at).toLocaleString("en-US",
     { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   $("#gen").textContent = "Updated " + gen + ".";
   $("#gen2").textContent = "Updated " + gen + ".";
-  renderBoard(); renderDraws();
+  renderBoard(); renderCorr(); renderDraws();
 })();

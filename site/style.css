@@ -129,6 +129,11 @@ h1 { font-size: clamp(44px, 7vw, 76px); line-height: 0.95; text-transform: upper
 .n-drawn { border-color: var(--color-text); background: var(--color-text); color: var(--color-bg); font-weight: 700; }
 .n-drawn-bonus { border-color: var(--color-accent-900); background: var(--color-bg); color: var(--color-accent-900); font-weight: 700; }
 
+.corr th.r { font-size: 12px; }
+.corr-row { text-align: left; font-weight: 500; font-size: 14px; padding: var(--space-2); white-space: nowrap; }
+.corr td { font-variant-numeric: tabular-nums; min-width: 64px; }
+.corr-self { color: var(--color-muted); }
+
 .foot { margin-top: 80px; padding-bottom: 56px; }
 .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--space-6); border-top: 1px solid var(--color-divider); padding-top: var(--space-6); font-size: 13px; }
