@@ -114,7 +114,9 @@
   const WHITE_MAX = { powerball: 69, megamillions: 70 };
   const bonusMax = (d) => (d.game === "powerball" ? 26 : d.date >= "2025-04-08" ? 24 : 25);
   function corrMatrix(g) {
-    const ids = data.leaderboard.map((b) => b.id);
+    // Fixed order (by contestant id), the same one the pick lists use before a drawing is scored,
+    // so rows don't reshuffle as the leaderboard changes.
+    const ids = data.leaderboard.map((b) => b.id).sort((a, b) => a.localeCompare(b));
     const draws = data.draws.filter((d) => g === "all" || d.game === g);
     const pick = (d, id) => {
       const p = d.picks[id];
