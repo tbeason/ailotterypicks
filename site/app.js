@@ -107,17 +107,18 @@
   }
 
 
-  // Correlation between contestants' picks. Each ticket (all six numbers, bonus ball included and
-  // treated like any other) becomes a 0/1 vector over (drawing, ball number); the Pearson
-  // correlation of two such vectors is the phi coefficient. Only drawings where both contestants
-  // have a valid pick count.
-  const BALL_MAX = { powerball: 69, megamillions: 70 };
+  // Similarity between contestants' tickets. Each ticket (white balls plus the bonus ball, all
+  // counted alike) becomes a 0/1 vector over (drawing, ball number), with the bonus ball in its own
+  // pool of cells because it is drawn from a separate range. Only drawings where both contestants
+  // have a valid pick count. Pool sizes are the current rules; Mega Millions' Mega Ball was 1-25 before 2025-04-08.
+  const WHITE_MAX = { powerball: 69, megamillions: 70 };
+  const bonusMax = (d) => (d.game === "powerball" ? 26 : d.date >= "2025-04-08" ? 24 : 25);
   function corrMatrix(g) {
     const ids = data.leaderboard.map((b) => b.id);
     const draws = data.draws.filter((d) => g === "all" || d.game === g);
     const pick = (d, id) => {
       const p = d.picks[id];
-      return p && p.numbers ? new Set(p.bonus != null ? [...p.numbers, p.bonus] : p.numbers) : null;
+      return p && p.numbers ? { w: new Set(p.numbers), b: p.bonus ?? null } : null;
     };
     const present = ids.filter((id) => draws.some((d) => pick(d, id)));
     const cell = {};
@@ -127,11 +128,16 @@
       for (const d of draws) {
         const pa = pick(d, a), pb = pick(d, b);
         if (!pa || !pb) continue;
-        n++; N += BALL_MAX[d.game]; sa += pa.size; sb += pb.size;
-        const M = BALL_MAX[d.game];
-        expected += pa.size * pb.size / M;
-        varSum += pa.size * pb.size * (M - pa.size) * (M - pb.size) / (M * M * (M - 1));
-        for (const x of pa) if (pb.has(x)) both++;
+        const W = WHITE_MAX[d.game], B = bonusMax(d);
+        const ka = pa.w.size, kb = pb.w.size;
+        n++; N += W + B; sa += ka + (pa.b != null); sb += kb + (pb.b != null);
+        expected += ka * kb / W;
+        varSum += ka * kb * (W - ka) * (W - kb) / (W * W * (W - 1));
+        for (const x of pa.w) if (pb.w.has(x)) both++;
+        if (pa.b != null && pb.b != null) {
+          expected += 1 / B; varSum += (1 / B) * (1 - 1 / B);
+          if (pa.b === pb.b) both++;
+        }
       }
       const den = Math.sqrt(sa * (N - sa) * sb * (N - sb));
       cell[a + "|" + b] = { n, shared: both, expected, z: n && varSum ? (both - expected) / Math.sqrt(varSum) : null,
@@ -146,7 +152,7 @@
       note: "Correlation of the two tickets' number-by-number picks (0/1 vectors over every ball in every drawing). 0 means no more overlap than chance; 1 means identical tickets." },
     overlap: { self: "–", text: (c) => c.n ? (c.shared / c.n).toFixed(2) : null,
       tone: (c) => (c.shared - c.expected) / c.n,
-      note: "Average count of numbers two contestants' tickets share per drawing. Two random six-number tickets share about 0.5; hover a cell for the exact chance level for that pair." },
+      note: "Average count of numbers two contestants' tickets share per drawing. Two random tickets share about 0.4–0.5; hover a cell for the exact chance level for that pair." },
     z: { self: "–", text: (c) => c.z == null ? null : c.z.toFixed(1),
       tone: (c) => c.z / 4,
       note: "How far the shared-number count sits from what two random tickets would share, in standard errors (hypergeometric). Roughly, beyond ±2 is unlikely to be chance for one pair, but with ~28 pairs a few will cross it by luck." },
@@ -158,7 +164,7 @@
     const el = $("#corr"), m = MODES[corrMode];
     document.querySelectorAll("#corr-seg .seg-opt").forEach((b) =>
       b.setAttribute("aria-pressed", String(b.dataset.mode === corrMode)));
-    $("#corr-note").textContent = m.note + " Uses all six numbers (bonus ball treated like any other) over drawings both contestants entered, and follows the game filter above. With only a few dozen drawings, small differences are mostly noise.";
+    $("#corr-note").textContent = m.note + " Counts the bonus ball like any other number (in its own pool, since it is drawn from a separate range) over drawings both contestants entered, and follows the game filter above. With only a few dozen drawings, small differences are mostly noise.";
     if (ids.length < 2) { el.innerHTML = `<tbody><tr><td>Not enough picks yet.</td></tr></tbody>`; return; }
     const get = (a, b) => cell[(a < b ? a : b) + "|" + (a < b ? b : a)];
     const short = (id) => esc(family(id, contestants[id]?.label || id));
