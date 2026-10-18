@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-18T11:14:49+00:00",
+ "generated_at": "2026-10-18T20:49:50+00:00",
  "leaderboard": [
   {
    "id": "gemini",
@@ -619,14 +619,14 @@
     ],
     "bonus": 11,
     "multiplier": 3,
-    "jackpot": null
+    "jackpot": "586 Million"
    },
    "scores": {
     "claude-opus": {
      "white_matches": 0,
      "bonus_match": true,
      "prize": 4,
-     "prize_source": "table",
+     "prize_source": "official",
      "jackpot": false,
      "cost": 2
     },
