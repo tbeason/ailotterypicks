@@ -106,6 +106,83 @@
       b.setAttribute("aria-pressed", String(b.dataset.game === game)));
   }
 
+
+  // Similarity between contestants' tickets. Each ticket (white balls plus the bonus ball, all
+  // counted alike) becomes a 0/1 vector over (drawing, ball number), with the bonus ball in its own
+  // pool of cells because it is drawn from a separate range. Only drawings where both contestants
+  // have a valid pick count. Pool sizes are the current rules; Mega Millions' Mega Ball was 1-25 before 2025-04-08.
+  const WHITE_MAX = { powerball: 69, megamillions: 70 };
+  const bonusMax = (d) => (d.game === "powerball" ? 26 : d.date >= "2025-04-08" ? 24 : 25);
+  function corrMatrix(g) {
+    const ids = data.leaderboard.map((b) => b.id);
+    const draws = data.draws.filter((d) => g === "all" || d.game === g);
+    const pick = (d, id) => {
+      const p = d.picks[id];
+      return p && p.numbers ? { w: new Set(p.numbers), b: p.bonus ?? null } : null;
+    };
+    const present = ids.filter((id) => draws.some((d) => pick(d, id)));
+    const cell = {};
+    for (const a of present) for (const b of present) {
+      if (a >= b) continue;
+      let n = 0, N = 0, both = 0, sa = 0, sb = 0, expected = 0, varSum = 0;
+      for (const d of draws) {
+        const pa = pick(d, a), pb = pick(d, b);
+        if (!pa || !pb) continue;
+        const W = WHITE_MAX[d.game], B = bonusMax(d);
+        const ka = pa.w.size, kb = pb.w.size;
+        n++; N += W + B; sa += ka + (pa.b != null); sb += kb + (pb.b != null);
+        expected += ka * kb / W;
+        varSum += ka * kb * (W - ka) * (W - kb) / (W * W * (W - 1));
+        for (const x of pa.w) if (pb.w.has(x)) both++;
+        if (pa.b != null && pb.b != null) {
+          expected += 1 / B; varSum += (1 / B) * (1 - 1 / B);
+          if (pa.b === pb.b) both++;
+        }
+      }
+      const den = Math.sqrt(sa * (N - sa) * sb * (N - sb));
+      cell[a + "|" + b] = { n, shared: both, expected, z: n && varSum ? (both - expected) / Math.sqrt(varSum) : null,
+        r: n && den ? (both * N - sa * sb) / den : null };
+    }
+    return { ids: present, cell };
+  }
+
+  const MODES = {
+    r: { self: "1", text: (c) => c.r == null ? null : c.r.toFixed(2),
+      tone: (c) => c.r / 0.4,
+      note: "Correlation of the two tickets' number-by-number picks (0/1 vectors over every ball in every drawing). 0 means no more overlap than chance; 1 means identical tickets." },
+    overlap: { self: "–", text: (c) => c.n ? (c.shared / c.n).toFixed(2) : null,
+      tone: (c) => (c.shared - c.expected) / c.n,
+      note: "Average count of numbers two contestants' tickets share per drawing. Two random tickets share about 0.4–0.5; hover a cell for the exact chance level for that pair." },
+    z: { self: "–", text: (c) => c.z == null ? null : c.z.toFixed(1),
+      tone: (c) => c.z / 4,
+      note: "How far the shared-number count sits from what two random tickets would share, in standard errors (hypergeometric). Roughly, beyond ±2 is unlikely to be chance for one pair, but with ~28 pairs a few will cross it by luck." },
+  };
+  let corrMode = "r";
+
+  function renderCorr() {
+    const { ids, cell } = corrMatrix(game);
+    const el = $("#corr"), m = MODES[corrMode];
+    document.querySelectorAll("#corr-seg .seg-opt").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.mode === corrMode)));
+    $("#corr-note").textContent = m.note + " Counts the bonus ball like any other number (in its own pool, since it is drawn from a separate range) over drawings both contestants entered, and follows the game filter above. With only a few dozen drawings, small differences are mostly noise.";
+    if (ids.length < 2) { el.innerHTML = `<tbody><tr><td>Not enough picks yet.</td></tr></tbody>`; return; }
+    const get = (a, b) => cell[(a < b ? a : b) + "|" + (a < b ? b : a)];
+    const short = (id) => esc(family(id, contestants[id]?.label || id));
+    el.innerHTML = `<thead><tr><th></th>${ids.map((id) => `<th class="r">${short(id)}</th>`).join("")}</tr></thead><tbody>` +
+      ids.map((a) => `<tr><th scope="row" class="corr-row">${short(a)}</th>` + ids.map((b) => {
+        if (a === b) return `<td class="r corr-self">${m.self}</td>`;
+        const c = get(a, b), t = c && m.text(c);
+        if (t == null) return `<td class="r muted">–</td>`;
+        const tone = m.tone(c);
+        const alpha = Math.min(60, Math.round(Math.abs(tone) * 60));
+        return `<td class="r corr-c" data-a="${alpha}" data-neg="${tone < 0 ? 1 : 0}" ` +
+          `title="${c.n} drawings; ${c.shared} numbers in common vs ${c.expected.toFixed(1)} expected by chance">${t}</td>`;
+      }).join("") + "</tr>").join("") + "</tbody>";
+    el.querySelectorAll(".corr-c").forEach((td) => {
+      td.style.background = `color-mix(in srgb, var(${td.dataset.neg === "1" ? "--color-text" : "--color-accent"}) ${td.dataset.a}%, transparent)`;
+    });
+  }
+
   const cell = (n, cls) => `<span class="n ${cls}">${n}</span>`;
   function pickCells(nums, bonus, result) {
     const hit = new Set(result ? result.numbers : []);
@@ -157,13 +234,17 @@
     $("#results-cols").innerHTML = latest.map(column).join("") || "<p class='muted'>Nothing scored yet.</p>";
   }
 
+  $("#corr-seg").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".seg-opt");
+    if (b) { corrMode = b.dataset.mode; renderCorr(); }
+  });
   $("#seg").addEventListener("click", (ev) => {
     const b = ev.target.closest(".seg-opt");
-    if (b) { game = b.dataset.game; renderBoard(); }
+    if (b) { game = b.dataset.game; renderBoard(); renderCorr(); }
   });
   const gen = new Date(data.generated_at).toLocaleString("en-US",
     { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   $("#gen").textContent = "Updated " + gen + ".";
   $("#gen2").textContent = "Updated " + gen + ".";
-  renderBoard(); renderDraws();
+  renderBoard(); renderCorr(); renderDraws();
 })();

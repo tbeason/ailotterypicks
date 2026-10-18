@@ -58,6 +58,17 @@
     </div>
     <div class="cols" id="results-cols"></div>
   </section>
+  <section id="agreement" class="sec">
+    <div class="sec-head sec-head-center"><span class="idx">04</span><h2>Do the models agree?</h2>
+      <div class="seg" id="corr-seg" role="group" aria-label="Similarity measure">
+        <button type="button" class="seg-opt" data-mode="r" aria-pressed="true">Correlation</button>
+        <button type="button" class="seg-opt" data-mode="overlap" aria-pressed="false">Avg overlap</button>
+        <button type="button" class="seg-opt" data-mode="z" aria-pressed="false">Z-score</button>
+      </div>
+    </div>
+    <div class="scroll"><table id="corr" class="table corr"></table></div>
+    <p class="muted note" id="corr-note"></p>
+  </section>
 </main>
 
 <footer id="sources" class="wrap foot">
