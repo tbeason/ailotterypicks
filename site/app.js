@@ -123,33 +123,54 @@
     const cell = {};
     for (const a of present) for (const b of present) {
       if (a >= b) continue;
-      let n = 0, N = 0, both = 0, sa = 0, sb = 0;
+      let n = 0, N = 0, both = 0, sa = 0, sb = 0, expected = 0, varSum = 0;
       for (const d of draws) {
         const pa = pick(d, a), pb = pick(d, b);
         if (!pa || !pb) continue;
         n++; N += BALL_MAX[d.game]; sa += pa.size; sb += pb.size;
+        const M = BALL_MAX[d.game];
+        expected += pa.size * pb.size / M;
+        varSum += pa.size * pb.size * (M - pa.size) * (M - pb.size) / (M * M * (M - 1));
         for (const x of pa) if (pb.has(x)) both++;
       }
       const den = Math.sqrt(sa * (N - sa) * sb * (N - sb));
-      cell[a + "|" + b] = { n, shared: both, r: n && den ? (both * N - sa * sb) / den : null };
+      cell[a + "|" + b] = { n, shared: both, expected, z: n && varSum ? (both - expected) / Math.sqrt(varSum) : null,
+        r: n && den ? (both * N - sa * sb) / den : null };
     }
     return { ids: present, cell };
   }
 
+  const MODES = {
+    r: { self: "1", text: (c) => c.r == null ? null : c.r.toFixed(2),
+      tone: (c) => c.r / 0.4,
+      note: "Correlation of the two tickets' number-by-number picks (0/1 vectors over every ball in every drawing). 0 means no more overlap than chance; 1 means identical tickets." },
+    overlap: { self: "–", text: (c) => c.n ? (c.shared / c.n).toFixed(2) : null,
+      tone: (c) => (c.shared - c.expected) / c.n,
+      note: "Average count of numbers two contestants' tickets share per drawing. Two random six-number tickets share about 0.5; hover a cell for the exact chance level for that pair." },
+    z: { self: "–", text: (c) => c.z == null ? null : c.z.toFixed(1),
+      tone: (c) => c.z / 4,
+      note: "How far the shared-number count sits from what two random tickets would share, in standard errors (hypergeometric). Roughly, beyond ±2 is unlikely to be chance for one pair, but with ~28 pairs a few will cross it by luck." },
+  };
+  let corrMode = "r";
+
   function renderCorr() {
     const { ids, cell } = corrMatrix(game);
-    const el = $("#corr");
+    const el = $("#corr"), m = MODES[corrMode];
+    document.querySelectorAll("#corr-seg .seg-opt").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.mode === corrMode)));
+    $("#corr-note").textContent = m.note + " Uses all six numbers (bonus ball treated like any other) over drawings both contestants entered, and follows the game filter above. With only a few dozen drawings, small differences are mostly noise.";
     if (ids.length < 2) { el.innerHTML = `<tbody><tr><td>Not enough picks yet.</td></tr></tbody>`; return; }
     const get = (a, b) => cell[(a < b ? a : b) + "|" + (a < b ? b : a)];
     const short = (id) => esc(family(id, contestants[id]?.label || id));
     el.innerHTML = `<thead><tr><th></th>${ids.map((id) => `<th class="r">${short(id)}</th>`).join("")}</tr></thead><tbody>` +
       ids.map((a) => `<tr><th scope="row" class="corr-row">${short(a)}</th>` + ids.map((b) => {
-        if (a === b) return `<td class="r corr-self">1</td>`;
-        const c = get(a, b);
-        if (!c || c.r == null) return `<td class="r muted">–</td>`;
-        const alpha = Math.min(60, Math.round(Math.abs(c.r) / 0.4 * 60));
-        return `<td class="r corr-c" data-a="${alpha}" data-neg="${c.r < 0 ? 1 : 0}" ` +
-          `title="${c.n} drawings, ${c.shared} numbers in common">${c.r.toFixed(2)}</td>`;
+        if (a === b) return `<td class="r corr-self">${m.self}</td>`;
+        const c = get(a, b), t = c && m.text(c);
+        if (t == null) return `<td class="r muted">–</td>`;
+        const tone = m.tone(c);
+        const alpha = Math.min(60, Math.round(Math.abs(tone) * 60));
+        return `<td class="r corr-c" data-a="${alpha}" data-neg="${tone < 0 ? 1 : 0}" ` +
+          `title="${c.n} drawings; ${c.shared} numbers in common vs ${c.expected.toFixed(1)} expected by chance">${t}</td>`;
       }).join("") + "</tr>").join("") + "</tbody>";
     el.querySelectorAll(".corr-c").forEach((td) => {
       td.style.background = `color-mix(in srgb, var(${td.dataset.neg === "1" ? "--color-text" : "--color-accent"}) ${td.dataset.a}%, transparent)`;
@@ -207,6 +228,10 @@
     $("#results-cols").innerHTML = latest.map(column).join("") || "<p class='muted'>Nothing scored yet.</p>";
   }
 
+  $("#corr-seg").addEventListener("click", (ev) => {
+    const b = ev.target.closest(".seg-opt");
+    if (b) { corrMode = b.dataset.mode; renderCorr(); }
+  });
   $("#seg").addEventListener("click", (ev) => {
     const b = ev.target.closest(".seg-opt");
     if (b) { game = b.dataset.game; renderBoard(); renderCorr(); }
