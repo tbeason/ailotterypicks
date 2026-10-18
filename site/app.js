@@ -114,7 +114,9 @@
   const WHITE_MAX = { powerball: 69, megamillions: 70 };
   const bonusMax = (d) => (d.game === "powerball" ? 26 : d.date >= "2025-04-08" ? 24 : 25);
   function corrMatrix(g) {
-    const ids = data.leaderboard.map((b) => b.id);
+    // Fixed order (by contestant id), the same one the pick lists use before a drawing is scored,
+    // so rows don't reshuffle as the leaderboard changes.
+    const ids = data.leaderboard.map((b) => b.id).sort((a, b) => a.localeCompare(b));
     const draws = data.draws.filter((d) => g === "all" || d.game === g);
     const pick = (d, id) => {
       const p = d.picks[id];
@@ -147,13 +149,13 @@
   }
 
   const MODES = {
-    r: { self: "1", text: (c) => c.r == null ? null : c.r.toFixed(2),
+    r: { text: (c) => c.r == null ? null : c.r.toFixed(2),
       tone: (c) => c.r / 0.4,
       note: "Correlation of the two tickets' number-by-number picks (0/1 vectors over every ball in every drawing). 0 means no more overlap than chance; 1 means identical tickets." },
-    overlap: { self: "–", text: (c) => c.n ? (c.shared / c.n).toFixed(2) : null,
+    overlap: { text: (c) => c.n ? (c.shared / c.n).toFixed(2) : null,
       tone: (c) => (c.shared - c.expected) / c.n,
       note: "Average count of numbers two contestants' tickets share per drawing. Two random tickets share about 0.4–0.5; hover a cell for the exact chance level for that pair." },
-    z: { self: "–", text: (c) => c.z == null ? null : c.z.toFixed(1),
+    z: { text: (c) => c.z == null ? null : c.z.toFixed(1),
       tone: (c) => c.z / 4,
       note: "How far the shared-number count sits from what two random tickets would share, in standard errors (hypergeometric). Roughly, beyond ±2 is unlikely to be chance for one pair, but with ~28 pairs a few will cross it by luck." },
   };
@@ -168,9 +170,11 @@
     if (ids.length < 2) { el.innerHTML = `<tbody><tr><td>Not enough picks yet.</td></tr></tbody>`; return; }
     const get = (a, b) => cell[(a < b ? a : b) + "|" + (a < b ? b : a)];
     const short = (id) => esc(family(id, contestants[id]?.label || id));
-    el.innerHTML = `<thead><tr><th></th>${ids.map((id) => `<th class="r">${short(id)}</th>`).join("")}</tr></thead><tbody>` +
-      ids.map((a) => `<tr><th scope="row" class="corr-row">${short(a)}</th>` + ids.map((b) => {
-        if (a === b) return `<td class="r corr-self">${m.self}</td>`;
+    // Lower triangle only: the matrix is symmetric, so the first row and last column would be empty.
+    const rows = ids.slice(1), cols = ids.slice(0, -1);
+    el.innerHTML = `<thead><tr><th></th>${cols.map((id) => `<th class="r">${short(id)}</th>`).join("")}</tr></thead><tbody>` +
+      rows.map((a, i) => `<tr><th scope="row" class="corr-row">${short(a)}</th>` + cols.map((b, j) => {
+        if (j > i) return `<td></td>`;
         const c = get(a, b), t = c && m.text(c);
         if (t == null) return `<td class="r muted">–</td>`;
         const tone = m.tone(c);
