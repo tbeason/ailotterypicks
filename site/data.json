@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-21T11:57:23+00:00",
+ "generated_at": "2026-10-21T21:46:32+00:00",
  "leaderboard": [
   {
    "id": "grok",
@@ -619,7 +619,7 @@
     ],
     "bonus": 3,
     "multiplier": null,
-    "jackpot": null
+    "jackpot": "413 Million"
    },
    "scores": {
     "claude-opus": {
@@ -824,7 +824,7 @@
     ],
     "bonus": 23,
     "multiplier": 4,
-    "jackpot": null
+    "jackpot": "611 Million"
    },
    "scores": {
     "claude-opus": {
@@ -855,7 +855,7 @@
      "white_matches": 3,
      "bonus_match": false,
      "prize": 7,
-     "prize_source": "table",
+     "prize_source": "official",
      "jackpot": false,
      "cost": 2
     },
