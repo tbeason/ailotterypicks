@@ -1,0 +1,143 @@
+{
+ "game": "megamillions",
+ "date": "2026-10-23",
+ "prompt_version": 3,
+ "prompt": {
+  "system": "Fun public experiment: AI models pick lottery numbers before real drawings; picks are scored on a leaderboard. Use any strategy. Reply with JSON only.",
+  "user": "Mega Millions, drawing 2026-10-23.\nPick 5 distinct numbers 1-70 and 1 Mega Ball 1-24.\nLast 10 drawings (newest first, Mega Ball after |):\n2026-10-20 13 28 33 35 48 | 3\n2026-10-16 2 15 31 41 68 | 11\n2026-10-13 11 12 15 40 66 | 17\n2026-10-09 2 7 16 63 70 | 8\n2026-10-06 26 32 42 51 54 | 22\n2026-10-02 6 37 40 41 55 | 10\n2026-09-29 10 15 16 27 64 | 23\n2026-09-25 25 57 58 67 68 | 16\n2026-09-22 7 13 26 37 68 | 8\n2026-09-18 4 9 24 56 68 | 1\nLast 100 drawings: most frequent 30 63 13 43 48 59 26 34; least frequent 14 28 29 45 8 23 54 67; Mega Ball most frequent 12 16 7 4 6 24 1 8; longest absent 69 52 39 45 44 49 18 14\nJSON: {\"numbers\":[5 ints],\"bonus\":int,\"strategy\":\"<=6 words\",\"rationale\":\"<=30 words\",\"confidence\":0-100}"
+ },
+ "picks": {
+  "claude-opus": {
+   "label": "Claude Opus 5.5",
+   "model": "anthropic/claude-opus-5.5",
+   "picked_at": "2026-10-21T11:57:12+00:00",
+   "numbers": [
+    5,
+    19,
+    38,
+    52,
+    69
+   ],
+   "bonus": 14,
+   "strategy": "Random spread, avoid popular patterns",
+   "rationale": "Drawings are independent and every combination is equally likely. Spreading picks and avoiding birthday-heavy numbers only reduces the chance of splitting a jackpot.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.004264,
+   "raw_reply": "{\"numbers\":[5,19,38,52,69],\"bonus\":14,\"strategy\":\"Random spread, avoid popular patterns\",\"rationale\":\"Drawings are independent and every combination is equally likely. Spreading picks and avoiding birthday-heavy numbers only reduces the chance of splitting a jackpot.\",\"confidence\":1}"
+  },
+  "gpt": {
+   "label": "GPT-6 Sol",
+   "model": "openai/gpt-6-sol",
+   "picked_at": "2026-10-21T11:57:15+00:00",
+   "numbers": [
+    13,
+    26,
+    30,
+    43,
+    59
+   ],
+   "bonus": 12,
+   "strategy": "Frequency-based pick",
+   "rationale": "Selected frequent numbers from the last 100 drawings. Past results do not improve the odds of any combination.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "openai/gpt-6-sol",
+   "cost_usd": 0.001346,
+   "raw_reply": "{\"numbers\":[13,26,30,43,59],\"bonus\":12,\"strategy\":\"Frequency-based pick\",\"rationale\":\"Selected frequent numbers from the last 100 drawings. Past results do not improve the odds of any combination.\",\"confidence\":1}"
+  },
+  "gemini": {
+   "label": "Gemini 3.8 Flash",
+   "model": "google/gemini-3.8-flash",
+   "picked_at": "2026-10-21T11:57:16+00:00",
+   "numbers": [
+    14,
+    23,
+    30,
+    43,
+    69
+   ],
+   "bonus": 12,
+   "strategy": "Balance overdue and high-frequency numbers",
+   "rationale": "Includes overdue cold picks 14 and 69 alongside historically dominant frequent numbers 30 and 43, paired with the most common Mega Ball 12.",
+   "confidence": 14,
+   "attempts": 1,
+   "served_model": "google/gemini-3.8-flash",
+   "cost_usd": 0.000786,
+   "raw_reply": "```json\n{\n  \"numbers\": [14, 23, 30, 43, 69],\n  \"bonus\": 12,\n  \"strategy\": \"Balance overdue and high-frequency numbers\",\n  \"rationale\": \"Includes overdue cold picks 14 and 69 alongside historically dominant frequent numbers 30 and 43, paired with the most common Mega Ball 12.\",\n  \"confidence\": 14\n}\n```"
+  },
+  "grok": {
+   "label": "Grok 4.7",
+   "model": "x-ai/grok-4.7",
+   "picked_at": "2026-10-21T11:57:19+00:00",
+   "numbers": [
+    30,
+    43,
+    52,
+    59,
+    69
+   ],
+   "bonus": 12,
+   "strategy": "Hot plus overdue mix",
+   "rationale": "Combined frequent whites with longest-absent numbers and a hot Mega Ball.",
+   "confidence": 7,
+   "attempts": 1,
+   "served_model": "x-ai/grok-4.7",
+   "cost_usd": 0.003288,
+   "raw_reply": "{\"numbers\":[30,43,52,59,69],\"bonus\":12,\"strategy\":\"Hot plus overdue mix\",\"rationale\":\"Combined frequent whites with longest-absent numbers and a hot Mega Ball.\",\"confidence\":7}"
+  },
+  "deepseek": {
+   "label": "DeepSeek V4.1 Flash",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "picked_at": "2026-10-21T11:57:22+00:00",
+   "numbers": [
+    30,
+    34,
+    43,
+    59,
+    63
+   ],
+   "bonus": 12,
+   "strategy": "Hot frequency plus cold correction",
+   "rationale": "Selected high-frequency main numbers from last 100 draws, with Mega Ball 12 as most frequent. Slight cold-number balance omitted due to stronger hot trends.",
+   "confidence": 8,
+   "attempts": 1,
+   "served_model": "deepseek/deepseek-v4.1-flash",
+   "cost_usd": 9e-05,
+   "raw_reply": "{\"numbers\":[30,43,59,63,34],\"bonus\":12,\"strategy\":\"Hot frequency plus cold correction\",\"rationale\":\"Selected high-frequency main numbers from last 100 draws, with Mega Ball 12 as most frequent. Slight cold-number balance omitted due to stronger hot trends.\",\"confidence\":8}"
+  },
+  "random": {
+   "label": "Random quick pick",
+   "model": "baseline",
+   "picked_at": "2026-10-21T11:57:23+00:00",
+   "numbers": [
+    8,
+    29,
+    46,
+    60,
+    67
+   ],
+   "bonus": 7,
+   "strategy": "Uniform random (quick pick)",
+   "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+   "confidence": null
+  },
+  "hot": {
+   "label": "Hot-numbers bot",
+   "model": "baseline",
+   "picked_at": "2026-10-21T11:57:23+00:00",
+   "numbers": [
+    13,
+    30,
+    43,
+    48,
+    63
+   ],
+   "bonus": 12,
+   "strategy": "Hottest numbers, last 100 draws",
+   "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+   "confidence": null
+  }
+ }
+}
