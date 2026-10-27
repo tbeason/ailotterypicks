@@ -38432,5 +38432,18 @@
   "bonus": 19,
   "multiplier": 2,
   "source": "data.ny.gov"
+ },
+ {
+  "date": "2026-10-26",
+  "numbers": [
+   18,
+   26,
+   49,
+   50,
+   54
+  ],
+  "bonus": 1,
+  "multiplier": 3,
+  "source": "data.ny.gov"
  }
 ]
