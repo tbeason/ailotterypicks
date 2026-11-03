@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T13:31:53+00:00",
+ "generated_at": "2026-11-03T06:54:46+00:00",
  "leaderboard": [
   {
    "id": "grok",
@@ -619,7 +619,7 @@
     ],
     "bonus": 20,
     "multiplier": 3,
-    "jackpot": null
+    "jackpot": "770 Million"
    },
    "scores": {
     "claude-opus": {
