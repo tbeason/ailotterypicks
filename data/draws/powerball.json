@@ -38566,6 +38566,20 @@
   ],
   "bonus": 21,
   "multiplier": 2,
-  "source": "data.ny.gov"
+  "source": "data.ny.gov",
+  "jackpot": "847 Million",
+  "cash_value": "363.1 Million",
+  "jackpot_usd": 847000000,
+  "prizes": {
+   "match_5": 1000000,
+   "match_4_bonus": 50000,
+   "match_4": 100,
+   "match_3_bonus": 100,
+   "match_3": 7,
+   "match_2_bonus": 7,
+   "match_1_bonus": 4,
+   "match_0_bonus": 4
+  },
+  "verified": true
  }
 ]
