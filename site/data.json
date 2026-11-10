@@ -1,13 +1,13 @@
 {
- "generated_at": "2026-11-08T22:11:33+00:00",
+ "generated_at": "2026-11-10T14:58:06+00:00",
  "leaderboard": [
   {
    "id": "grok",
    "label": "Grok 4.7",
    "family": "Grok",
    "baseline": false,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 14,
    "wins": 2,
    "white_matches": 17,
@@ -22,8 +22,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 14,
      "white_matches": 12,
      "bonus_matches": 0,
@@ -44,8 +44,8 @@
      ]
     }
    },
-   "net": -91,
-   "avg_white_matches": 0.5151515151515151,
+   "net": -93,
+   "avg_white_matches": 0.5,
    "bonus_rate": 0.0
   },
   {
@@ -53,8 +53,8 @@
    "label": "Claude Opus 5.5",
    "family": "Claude",
    "baseline": false,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 11,
    "wins": 2,
    "white_matches": 17,
@@ -69,8 +69,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 11,
      "white_matches": 10,
      "bonus_matches": 1,
@@ -91,17 +91,17 @@
      ]
     }
    },
-   "net": -94,
-   "avg_white_matches": 0.5151515151515151,
-   "bonus_rate": 0.030303030303030304
+   "net": -96,
+   "avg_white_matches": 0.5,
+   "bonus_rate": 0.029411764705882353
   },
   {
    "id": "gemini",
    "label": "Gemini 3.8 Flash",
    "family": "Gemini",
    "baseline": false,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 7,
    "wins": 1,
    "white_matches": 14,
@@ -116,8 +116,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 7,
      "white_matches": 9,
      "bonus_matches": 0,
@@ -138,8 +138,8 @@
      ]
     }
    },
-   "net": -98,
-   "avg_white_matches": 0.42424242424242425,
+   "net": -100,
+   "avg_white_matches": 0.4117647058823529,
    "bonus_rate": 0.0
   },
   {
@@ -147,8 +147,8 @@
    "label": "Random quick pick",
    "family": null,
    "baseline": true,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 4,
    "wins": 1,
    "white_matches": 16,
@@ -163,8 +163,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 4,
      "white_matches": 9,
      "bonus_matches": 1,
@@ -185,17 +185,17 @@
      ]
     }
    },
-   "net": -101,
-   "avg_white_matches": 0.48484848484848486,
-   "bonus_rate": 0.030303030303030304
+   "net": -103,
+   "avg_white_matches": 0.47058823529411764,
+   "bonus_rate": 0.029411764705882353
   },
   {
    "id": "deepseek",
    "label": "DeepSeek V4.1 Flash",
    "family": "DeepSeek",
    "baseline": false,
-   "tickets": 27,
-   "spent": 87,
+   "tickets": 28,
+   "spent": 89,
    "won": 4,
    "wins": 1,
    "white_matches": 5,
@@ -210,8 +210,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 16,
-     "spent": 32,
+     "tickets": 17,
+     "spent": 34,
      "won": 4,
      "white_matches": 5,
      "bonus_matches": 1,
@@ -232,17 +232,17 @@
      ]
     }
    },
-   "net": -83,
-   "avg_white_matches": 0.18518518518518517,
-   "bonus_rate": 0.037037037037037035
+   "net": -85,
+   "avg_white_matches": 0.17857142857142858,
+   "bonus_rate": 0.03571428571428571
   },
   {
    "id": "gpt",
    "label": "GPT-6 Sol",
    "family": "GPT",
    "baseline": false,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 0,
    "wins": 0,
    "white_matches": 13,
@@ -257,8 +257,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 0,
      "white_matches": 8,
      "bonus_matches": 0,
@@ -279,8 +279,8 @@
      ]
     }
    },
-   "net": -105,
-   "avg_white_matches": 0.3939393939393939,
+   "net": -107,
+   "avg_white_matches": 0.38235294117647056,
    "bonus_rate": 0.0
   },
   {
@@ -288,8 +288,8 @@
    "label": "Hot-numbers bot",
    "family": null,
    "baseline": true,
-   "tickets": 33,
-   "spent": 105,
+   "tickets": 34,
+   "spent": 107,
    "won": 0,
    "wins": 0,
    "white_matches": 9,
@@ -304,8 +304,8 @@
    },
    "by_game": {
     "powerball": {
-     "tickets": 20,
-     "spent": 40,
+     "tickets": 21,
+     "spent": 42,
      "won": 0,
      "white_matches": 7,
      "bonus_matches": 0,
@@ -326,12 +326,149 @@
      ]
     }
    },
-   "net": -105,
-   "avg_white_matches": 0.2727272727272727,
+   "net": -107,
+   "avg_white_matches": 0.2647058823529412,
    "bonus_rate": 0.0
   }
  ],
  "draws": [
+  {
+   "game": "powerball",
+   "date": "2026-11-11",
+   "result": null,
+   "scores": null,
+   "picks": {
+    "claude-opus": {
+     "label": "Claude Opus 5.5",
+     "model": "anthropic/claude-opus-5.5",
+     "picked_at": "2026-11-10T14:57:50+00:00",
+     "numbers": [
+      9,
+      27,
+      38,
+      52,
+      67
+     ],
+     "bonus": 11,
+     "strategy": "Random spread, avoid popular patterns",
+     "rationale": "Draws are independent, so history has no predictive value. Spread-out picks that avoid birthday clusters only reduce the chance of splitting a jackpot.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "anthropic/claude-opus-5.5",
+     "cost_usd": 0.004132
+    },
+    "gpt": {
+     "label": "GPT-6 Sol",
+     "model": "openai/gpt-6-sol",
+     "picked_at": "2026-11-10T14:57:52+00:00",
+     "numbers": [
+      10,
+      27,
+      39,
+      43,
+      63
+     ],
+     "bonus": 14,
+     "strategy": "Random pick using absent numbers",
+     "rationale": "Past drawings do not predict the next one; every valid combination has the same chance.",
+     "confidence": 1,
+     "attempts": 1,
+     "served_model": "openai/gpt-6-sol",
+     "cost_usd": 0.001486
+    },
+    "gemini": {
+     "label": "Gemini 3.8 Flash",
+     "model": "google/gemini-3.8-flash",
+     "picked_at": "2026-11-10T14:57:54+00:00",
+     "numbers": [
+      4,
+      16,
+      27,
+      43,
+      64
+     ],
+     "bonus": 14,
+     "strategy": "Balance hot trends and overdue numbers",
+     "rationale": "Combines top historical performers 4, 16, and 64 with deeply overdue numbers 27 and 43, paired with high-frequency Powerball 14.",
+     "confidence": 12,
+     "attempts": 1,
+     "served_model": "google/gemini-3.8-flash",
+     "cost_usd": 0.000794
+    },
+    "grok": {
+     "label": "Grok 4.7",
+     "model": "x-ai/grok-4.7",
+     "picked_at": "2026-11-10T14:57:56+00:00",
+     "numbers": [
+      16,
+      42,
+      43,
+      57,
+      64
+     ],
+     "bonus": 14,
+     "strategy": "Hot plus overdue mix",
+     "rationale": "Pair frequent whites with long-absent numbers and a historically common Powerball.",
+     "confidence": 4,
+     "attempts": 1,
+     "served_model": "x-ai/grok-4.7",
+     "cost_usd": 0.005674
+    },
+    "deepseek": {
+     "label": "DeepSeek V4.1 Flash",
+     "model": "deepseek/deepseek-v4.1-flash",
+     "picked_at": "2026-11-10T14:58:05+00:00",
+     "numbers": [
+      4,
+      16,
+      42,
+      56,
+      64
+     ],
+     "bonus": 3,
+     "strategy": "hot numbers plus powerball frequency",
+     "rationale": "Chose frequent recent and 100-draw numbers 4,16,42,56,64; Powerball 3 is most frequent in last 100.",
+     "confidence": 12,
+     "attempts": 1,
+     "served_model": "deepseek/deepseek-v4.1-flash",
+     "cost_usd": 0.000203
+    },
+    "random": {
+     "label": "Random quick pick",
+     "model": "baseline",
+     "picked_at": "2026-11-10T14:58:06+00:00",
+     "numbers": [
+      19,
+      23,
+      30,
+      39,
+      62
+     ],
+     "bonus": 18,
+     "strategy": "Uniform random (quick pick)",
+     "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+     "confidence": null
+    },
+    "hot": {
+     "label": "Hot-numbers bot",
+     "model": "baseline",
+     "picked_at": "2026-11-10T14:58:06+00:00",
+     "numbers": [
+      3,
+      4,
+      16,
+      42,
+      64
+     ],
+     "bonus": 3,
+     "strategy": "Hottest numbers, last 100 draws",
+     "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+     "confidence": null
+    }
+   },
+   "game_name": "Powerball",
+   "bonus_name": "Powerball"
+  },
   {
    "game": "megamillions",
    "date": "2026-11-10",
@@ -472,8 +609,76 @@
   {
    "game": "powerball",
    "date": "2026-11-09",
-   "result": null,
-   "scores": null,
+   "result": {
+    "numbers": [
+     13,
+     34,
+     41,
+     45,
+     48
+    ],
+    "bonus": 25,
+    "multiplier": 2,
+    "jackpot": null
+   },
+   "scores": {
+    "claude-opus": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "gpt": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "gemini": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "grok": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "deepseek": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "random": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    },
+    "hot": {
+     "white_matches": 0,
+     "bonus_match": false,
+     "prize": 0,
+     "prize_source": "none",
+     "jackpot": false,
+     "cost": 2
+    }
+   },
    "picks": {
     "claude-opus": {
      "label": "Claude Opus 5.5",
