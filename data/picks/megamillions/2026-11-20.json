@@ -1,0 +1,143 @@
+{
+ "game": "megamillions",
+ "date": "2026-11-20",
+ "prompt_version": 3,
+ "prompt": {
+  "system": "Fun public experiment: AI models pick lottery numbers before real drawings; picks are scored on a leaderboard. Use any strategy. Reply with JSON only.",
+  "user": "Mega Millions, drawing 2026-11-20.\nPick 5 distinct numbers 1-70 and 1 Mega Ball 1-24.\nLast 10 drawings (newest first, Mega Ball after |):\n2026-11-17 3 10 19 28 33 | 21\n2026-11-13 10 22 33 49 57 | 18\n2026-11-10 2 18 25 30 65 | 22\n2026-11-06 27 34 44 53 64 | 1\n2026-11-03 4 24 31 62 70 | 3\n2026-10-30 5 10 38 49 68 | 17\n2026-10-27 14 19 21 45 67 | 3\n2026-10-23 3 7 46 49 51 | 5\n2026-10-20 13 28 33 35 48 | 3\n2026-10-16 2 15 31 41 68 | 11\nLast 100 drawings: most frequent 49 30 34 43 51 63 68 36; least frequent 23 29 8 14 28 6 45 54; Mega Ball most frequent 12 16 3 6 7 17 24 1; longest absent 69 52 39 20 23 60 47 50\nJSON: {\"numbers\":[5 ints],\"bonus\":int,\"strategy\":\"<=6 words\",\"rationale\":\"<=30 words\",\"confidence\":0-100}"
+ },
+ "picks": {
+  "claude-opus": {
+   "label": "Claude Opus 5.5",
+   "model": "anthropic/claude-opus-5.5",
+   "picked_at": "2026-11-18T11:50:34+00:00",
+   "numbers": [
+    39,
+    47,
+    52,
+    60,
+    69
+   ],
+   "bonus": 12,
+   "strategy": "Long-absent numbers, avoid birthdays",
+   "rationale": "Every draw is independent and random, so no pick has better odds. Numbers above 31 are chosen less often by people, which reduces the chance of splitting a jackpot.",
+   "confidence": 1,
+   "attempts": 1,
+   "served_model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.005124,
+   "raw_reply": "{\"numbers\":[39,47,52,60,69],\"bonus\":12,\"strategy\":\"Long-absent numbers, avoid birthdays\",\"rationale\":\"Every draw is independent and random, so no pick has better odds. Numbers above 31 are chosen less often by people, which reduces the chance of splitting a jackpot.\",\"confidence\":1}"
+  },
+  "gpt": {
+   "label": "GPT-6 Sol",
+   "model": "openai/gpt-6-sol",
+   "picked_at": "2026-11-18T11:50:37+00:00",
+   "numbers": [
+    12,
+    26,
+    37,
+    55,
+    69
+   ],
+   "bonus": 14,
+   "strategy": "Random selection",
+   "rationale": "Past drawings do not predict the next result; every valid combination has the same chance.",
+   "confidence": 0,
+   "attempts": 1,
+   "served_model": "openai/gpt-6-sol",
+   "cost_usd": 0.001766,
+   "raw_reply": "{\"numbers\":[12,26,37,55,69],\"bonus\":14,\"strategy\":\"Random selection\",\"rationale\":\"Past drawings do not predict the next result; every valid combination has the same chance.\",\"confidence\":0}"
+  },
+  "gemini": {
+   "label": "Gemini 3.8 Flash",
+   "model": "google/gemini-3.8-flash",
+   "picked_at": "2026-11-18T11:50:39+00:00",
+   "numbers": [
+    12,
+    23,
+    30,
+    49,
+    69
+   ],
+   "bonus": 12,
+   "strategy": "Overdue cold and hot balance",
+   "rationale": "Combines high-frequency 49 and 30 with severely overdue 23 and 69, pairing with historically frequent Mega Ball 12.",
+   "confidence": 18,
+   "attempts": 1,
+   "served_model": "google/gemini-3.8-flash",
+   "cost_usd": 0.000774,
+   "raw_reply": "```json\n{\n  \"numbers\": [12, 23, 30, 49, 69],\n  \"bonus\": 12,\n  \"strategy\": \"Overdue cold and hot balance\",\n  \"rationale\": \"Combines high-frequency 49 and 30 with severely overdue 23 and 69, pairing with historically frequent Mega Ball 12.\",\n  \"confidence\": 18\n}\n```"
+  },
+  "grok": {
+   "label": "Grok 4.7",
+   "model": "x-ai/grok-4.7",
+   "picked_at": "2026-11-18T11:50:41+00:00",
+   "numbers": [
+    30,
+    43,
+    49,
+    52,
+    69
+   ],
+   "bonus": 12,
+   "strategy": "Hot plus overdue mix",
+   "rationale": "Pair frequent mains 49, 30, and 43 with longest-absent 69 and 52; Mega Ball 12 is the most frequent.",
+   "confidence": 7,
+   "attempts": 1,
+   "served_model": "x-ai/grok-4.7",
+   "cost_usd": 0.003204,
+   "raw_reply": "{\"numbers\":[49,30,69,52,43],\"bonus\":12,\"strategy\":\"Hot plus overdue mix\",\"rationale\":\"Pair frequent mains 49, 30, and 43 with longest-absent 69 and 52; Mega Ball 12 is the most frequent.\",\"confidence\":7}"
+  },
+  "deepseek": {
+   "label": "DeepSeek V4.1 Flash",
+   "model": "deepseek/deepseek-v4.1-flash",
+   "picked_at": "2026-11-18T11:50:44+00:00",
+   "numbers": [
+    10,
+    30,
+    34,
+    49,
+    68
+   ],
+   "bonus": 12,
+   "strategy": "hot plus recent repeats",
+   "rationale": "Incorporates most frequent 34,49,68 and recent 10,30 while avoiding longest-absent numbers. Mega Ball 12 is statistically hot.",
+   "confidence": 18,
+   "attempts": 1,
+   "served_model": "deepseek/deepseek-v4.1-flash",
+   "cost_usd": 5.8e-05,
+   "raw_reply": "{\"numbers\":[10,30,34,49,68],\"bonus\":12,\"strategy\":\"hot plus recent repeats\",\"rationale\":\"Incorporates most frequent 34,49,68 and recent 10,30 while avoiding longest-absent numbers. Mega Ball 12 is statistically hot.\",\"confidence\":18}"
+  },
+  "random": {
+   "label": "Random quick pick",
+   "model": "baseline",
+   "picked_at": "2026-11-18T11:50:45+00:00",
+   "numbers": [
+    13,
+    48,
+    65,
+    67,
+    68
+   ],
+   "bonus": 5,
+   "strategy": "Uniform random (quick pick)",
+   "rationale": "Every combination is equally likely, so a quick pick is as good as anything.",
+   "confidence": null
+  },
+  "hot": {
+   "label": "Hot-numbers bot",
+   "model": "baseline",
+   "picked_at": "2026-11-18T11:50:45+00:00",
+   "numbers": [
+    30,
+    34,
+    43,
+    49,
+    51
+   ],
+   "bonus": 12,
+   "strategy": "Hottest numbers, last 100 draws",
+   "rationale": "Picks the most frequently drawn numbers. (The gambler's heuristic, done mechanically.)",
+   "confidence": null
+  }
+ }
+}
