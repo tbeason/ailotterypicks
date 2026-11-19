@@ -38716,5 +38716,18 @@
    "match_0_bonus": 4
   },
   "verified": true
+ },
+ {
+  "date": "2026-11-18",
+  "numbers": [
+   18,
+   31,
+   43,
+   51,
+   62
+  ],
+  "bonus": 12,
+  "multiplier": 2,
+  "source": "data.ny.gov"
  }
 ]
